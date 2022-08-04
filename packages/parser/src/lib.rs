@@ -2,7 +2,7 @@ use nom::{
     branch::alt,
     bytes::complete::tag,
     character::complete::{alpha1, alphanumeric1, multispace0, space0, space1},
-    combinator::{all_consuming, map, recognize, eof},
+    combinator::{all_consuming, eof, map, recognize},
     error::{context, ErrorKind},
     multi::{many0, many_till},
     sequence::{delimited, pair, tuple},
@@ -37,12 +37,10 @@ impl ParseError {
 }
 
 pub fn parse(input: &str) -> Result<Module, ParseError> {
-    let (_, script) = match all_consuming(module)(Span::new(input)).finish() {
-        Ok(ok) => Ok(ok),
+    match all_consuming(module)(Span::new(input)).finish() {
+        Ok((_, module)) => Ok(module),
         Err(e) => Err(ParseError(convert_error(input, e))),
-    }?;
-
-    Ok(script)
+    }
 }
 
 fn module(input: Span) -> ParseResult<Module> {
