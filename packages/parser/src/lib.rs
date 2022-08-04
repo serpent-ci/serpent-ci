@@ -2,9 +2,9 @@ use nom::{
     branch::alt,
     bytes::complete::tag,
     character::complete::{alpha1, alphanumeric1, multispace0, space0, space1},
-    combinator::{all_consuming, map, recognize},
+    combinator::{all_consuming, map, recognize, eof},
     error::{context, ErrorKind},
-    multi::many0,
+    multi::{many0, many_till},
     sequence::{delimited, pair, tuple},
     Finish, IResult,
 };
@@ -46,7 +46,7 @@ pub fn parse(input: &str) -> Result<Module, ParseError> {
 }
 
 fn module(input: Span) -> ParseResult<Module> {
-    let (input, functions) = context("module", many0(multiline_ws(function)))(input)?;
+    let (input, (functions, _)) = context("module", many_till(multiline_ws(function), eof))(input)?;
 
     Ok((input, Module { functions }))
 }
