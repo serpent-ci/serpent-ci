@@ -4,7 +4,7 @@ use nom::{
     character::complete::{alpha1, alphanumeric1, multispace0},
     combinator::{all_consuming, recognize},
     error::ErrorKind,
-    multi::{many0, many0_count},
+    multi::many0,
     sequence::{delimited, pair, tuple},
     Finish, IResult,
 };
@@ -71,7 +71,7 @@ fn function(input: Span) -> ParseResult<Function> {
 fn identifier(input: Span) -> ParseResult<Span> {
     recognize(pair(
         alt((alpha1, tag("_"))),
-        many0_count(alt((alphanumeric1, tag("_")))),
+        many0(alt((alphanumeric1, tag("_")))),
     ))(input)
 }
 
