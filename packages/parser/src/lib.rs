@@ -1,9 +1,9 @@
 use nom::{
     branch::alt,
     bytes::complete::tag,
-    character::complete::{alpha1, alphanumeric1, multispace0},
-    combinator::{all_consuming, recognize},
-    error::ErrorKind,
+    character::complete::{alpha1, alphanumeric1, multispace0, space0, space1},
+    combinator::{all_consuming, map, recognize},
+    error::{context, ErrorKind},
     multi::many0,
     sequence::{delimited, pair, tuple},
     Finish, IResult,
@@ -37,7 +37,7 @@ impl ParseError {
 }
 
 pub fn parse(input: &str) -> Result<Module, ParseError> {
-    let (_, script) = match all_consuming(ws(module))(Span::new(input)).finish() {
+    let (_, script) = match all_consuming(module)(Span::new(input)).finish() {
         Ok(ok) => Ok(ok),
         Err(e) => Err(ParseError(convert_error(input, e))),
     }?;
@@ -46,19 +46,16 @@ pub fn parse(input: &str) -> Result<Module, ParseError> {
 }
 
 fn module(input: Span) -> ParseResult<Module> {
-    let (input, functions) = many0(function)(input)?;
+    let (input, functions) = context("module", many0(multiline_ws(function)))(input)?;
 
     Ok((input, Module { functions }))
 }
 
 fn function(input: Span) -> ParseResult<Function> {
-    let (input, (_def, name, _params, _colon, _pass)) = tuple((
-        tag("def"),
-        ws(identifier),
-        ws(tag("()")),
-        ws(tag(":")),
-        tag("pass"),
-    ))(input)?;
+    let (input, (_def, _, name, _params, _colon, _pass)) = context(
+        "function",
+        tuple((def, space1, identifier, ws(tag("()")), colon, pass)),
+    )(input)?;
 
     Ok((
         input,
@@ -69,18 +66,59 @@ fn function(input: Span) -> ParseResult<Function> {
 }
 
 fn identifier(input: Span) -> ParseResult<Span> {
-    recognize(pair(
-        alt((alpha1, tag("_"))),
-        many0(alt((alphanumeric1, tag("_")))),
-    ))(input)
+    context(
+        "identifier",
+        recognize(pair(
+            alt((alpha1, tag("_"))),
+            many0(alt((alphanumeric1, tag("_")))),
+        )),
+    )(input)
 }
 
-fn ws<'a, F: 'a, O>(inner: F) -> impl FnMut(Span<'a>) -> ParseResult<'a, O>
+fn ws<'a, F, O>(inner: F) -> impl FnMut(Span<'a>) -> ParseResult<'a, O>
 where
-    F: FnMut(Span<'a>) -> ParseResult<'a, O>,
+    F: 'a + FnMut(Span<'a>) -> ParseResult<'a, O>,
+{
+    delimited(space0, inner, space0)
+}
+
+fn multiline_ws<'a, F, O>(inner: F) -> impl FnMut(Span<'a>) -> ParseResult<'a, O>
+where
+    F: 'a + FnMut(Span<'a>) -> ParseResult<'a, O>,
 {
     delimited(multispace0, inner, multispace0)
 }
+
+fn discard<'a, F, O>(inner: F) -> impl FnMut(Span<'a>) -> ParseResult<'a, ()>
+where
+    F: 'a + FnMut(Span<'a>) -> ParseResult<'a, O>,
+{
+    map(inner, |_| ())
+}
+
+macro_rules! keywords {
+    ($($kw:ident),*) => {
+        $(
+            fn $kw(input: Span) -> ParseResult<()> {
+                discard(tag(stringify!($kw)))(input)
+            }
+        )*
+    }
+}
+
+keywords!(def, pass);
+
+macro_rules! operators {
+    ($(($name:ident, $op:expr)),*) => {
+        $(
+            fn $name(input: Span) -> ParseResult<()> {
+                ws(discard(tag($op)))(input)
+            }
+        )*
+    }
+}
+
+operators!((colon, ":"));
 
 #[cfg(test)]
 mod tests {
