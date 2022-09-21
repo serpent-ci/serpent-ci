@@ -73,8 +73,8 @@ impl Function {
     }
 
     fn block_body(input: Span) -> ParseResult<Vec<Statement>> {
-        let (input, _) = discard(tuple((space0, eol, blank_lines)))(input)?;
-        let (input, prefix) = space1(input)?;
+        let (input, _) = discard(pair(eol, blank_lines))(input)?;
+        let (input, prefix) = space0(input)?;
 
         // TODO: Is error reporting friendly enough?
         separated_list1(
@@ -89,8 +89,11 @@ fn blank_lines(input: Span) -> ParseResult<()> {
 }
 
 fn eol(input: Span) -> ParseResult<()> {
-    // TODO: Handle whitespace at end of line
-    discard(pair(opt(pair(tag("#"), is_not("\r\n"))), line_ending))(input)
+    discard(tuple((
+        space0,
+        opt(pair(tag("#"), is_not("\r\n"))),
+        line_ending,
+    )))(input)
 }
 
 #[derive(Eq, PartialEq, Debug)]
