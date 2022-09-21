@@ -239,11 +239,16 @@ operators!((colon, ":"));
 
 #[cfg(test)]
 mod tests {
+    use indoc::indoc;
+
     use crate::{parse, Function, Module, Statement};
 
     #[test]
     fn basic_parsing() {
-        let input = include_str!("../../../tests/parse.py");
+        let input = indoc! {"
+            def test():
+                pass
+        "};
         let module = parse(input).unwrap();
         assert_eq!(
             module,
