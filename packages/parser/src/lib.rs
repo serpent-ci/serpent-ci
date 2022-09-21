@@ -16,12 +16,12 @@ type Span<'a> = LocatedSpan<&'a str>;
 
 type ParseResult<'a, T> = IResult<Span<'a>, T, GreedyError<Span<'a>, ErrorKind>>;
 
-#[derive(PartialEq, Debug)]
+#[derive(PartialEq, Eq, Debug)]
 pub struct Module {
     functions: Vec<Function>,
 }
 
-#[derive(PartialEq, Debug)]
+#[derive(PartialEq, Eq, Debug)]
 pub struct Function {
     name: String,
 }
