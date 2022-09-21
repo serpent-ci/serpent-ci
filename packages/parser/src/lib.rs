@@ -354,7 +354,6 @@ mod tests {
         );
     }
 
-
     #[test]
     fn call2_multiline_expression() {
         parse_expression(
