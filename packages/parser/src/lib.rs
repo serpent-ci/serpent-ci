@@ -1,8 +1,8 @@
 use nom::{
     branch::alt,
-    bytes::complete::tag,
+    bytes::complete::{is_not, tag},
     character::complete::{alpha1, alphanumeric1, line_ending, multispace0, space0, space1},
-    combinator::{all_consuming, eof, map, recognize},
+    combinator::{all_consuming, eof, map, opt, recognize},
     error::{context, ErrorKind},
     multi::{many0, many_till, separated_list1},
     sequence::{delimited, pair, tuple},
@@ -73,20 +73,23 @@ impl Function {
     }
 
     fn block_body(input: Span) -> ParseResult<Vec<Statement>> {
-        let (input, _) = discard(tuple((space0, line_ending, blank_lines)))(input)?;
+        let (input, _) = discard(tuple((space0, eol, blank_lines)))(input)?;
         let (input, prefix) = space1(input)?;
 
-        // TODO: Handle comments (line_ending parse should include comments).
         // TODO: Is error reporting friendly enough?
         separated_list1(
-            tuple((line_ending, blank_lines, tag(*prefix.fragment()))),
+            tuple((eol, blank_lines, tag(*prefix.fragment()))),
             Statement::parse,
         )(input)
     }
 }
 
 fn blank_lines(input: Span) -> ParseResult<()> {
-    discard(many0(pair(space0, line_ending)))(input)
+    discard(many0(pair(space0, eol)))(input)
+}
+
+fn eol(input: Span) -> ParseResult<()> {
+    discard(pair(opt(pair(tag("#"), is_not("\r\n"))), line_ending))(input)
 }
 
 #[derive(Eq, PartialEq, Debug)]
