@@ -241,22 +241,156 @@ operators!((colon, ":"));
 mod tests {
     use indoc::indoc;
 
-    use crate::{parse, Function, Module, Statement};
+    use crate::{parse, Expression, Function, Module, Statement};
 
     #[test]
-    fn basic_parsing() {
-        let input = indoc! {"
-            def test():
-                pass
-        "};
-        let module = parse(input).unwrap();
+    fn empty_fn() {
+        parse_function_body(
+            indoc! {"
+                def test():
+                    pass
+            "},
+            [Statement::Pass],
+        );
+    }
+
+    #[test]
+    fn multi_line() {
+        parse_function_body(
+            indoc! {"
+                def test():
+                    pass
+                    pass
+            "},
+            [Statement::Pass, Statement::Pass],
+        );
+    }
+
+    #[test]
+    fn blank_line() {
+        parse_function_body(
+            indoc! {"
+                def test():
+
+                    pass
+            "},
+            [Statement::Pass],
+        );
+    }
+
+    #[test]
+    fn comment() {
+        parse_function_body(
+            indoc! {"
+                def test():
+                    # Comment
+                    pass
+            "},
+            [Statement::Pass],
+        );
+    }
+
+    #[test]
+    fn variable_expression() {
+        parse_expression(
+            indoc! {"
+                def test():
+                    x
+            "},
+            Expression::Variable {
+                name: "x".to_string(),
+            },
+        );
+    }
+
+    #[test]
+    fn call0_expression() {
+        parse_expression(
+            indoc! {"
+                def test():
+                    x()
+            "},
+            Expression::Call {
+                name: "x".to_string(),
+                args: Vec::new(),
+            },
+        );
+    }
+
+    #[test]
+    fn call1_expression() {
+        parse_expression(
+            indoc! {"
+                def test():
+                    x(y)
+            "},
+            Expression::Call {
+                name: "x".to_string(),
+                args: vec![Expression::Variable {
+                    name: "y".to_string(),
+                }],
+            },
+        );
+    }
+
+    #[test]
+    fn call2_expression() {
+        parse_expression(
+            indoc! {"
+                def test():
+                    x(y, z)
+            "},
+            Expression::Call {
+                name: "x".to_string(),
+                args: vec![
+                    Expression::Variable {
+                        name: "y".to_string(),
+                    },
+                    Expression::Variable {
+                        name: "z".to_string(),
+                    },
+                ],
+            },
+        );
+    }
+
+
+    #[test]
+    fn call2_multiline_expression() {
+        parse_expression(
+            indoc! {"
+                def test():
+                    x(
+                        y,
+                        z
+                    )
+            "},
+            Expression::Call {
+                name: "x".to_string(),
+                args: vec![
+                    Expression::Variable {
+                        name: "y".to_string(),
+                    },
+                    Expression::Variable {
+                        name: "z".to_string(),
+                    },
+                ],
+            },
+        );
+    }
+
+    fn parse_expression(input: &str, expression: Expression) {
+        parse_function_body(input, [Statement::Expression(expression)])
+    }
+
+    fn parse_function_body<const COUNT: usize>(input: &str, body: [Statement; COUNT]) {
         assert_eq!(
-            module,
+            parse(input).unwrap(),
             Module {
                 functions: vec![Function {
                     name: "test".to_owned(),
-                    body: vec![Statement::Pass],
-                }]
+                    body: body.into(),
+                }],
             }
         );
     }
