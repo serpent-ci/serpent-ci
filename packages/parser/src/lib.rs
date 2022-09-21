@@ -73,12 +73,20 @@ impl Function {
     }
 
     fn block_body(input: Span) -> ParseResult<Vec<Statement>> {
-        let (input, _) = discard(pair(space0, line_ending))(input)?;
+        let (input, _) = discard(tuple((space0, line_ending, blank_lines)))(input)?;
         let (input, prefix) = space1(input)?;
 
-        // TODO: Handle blank lines/comments
-        separated_list1(pair(line_ending, tag(*prefix.fragment())), Statement::parse)(input)
+        // TODO: Handle comments (line_ending parse should include comments).
+        // TODO: Is error reporting friendly enough?
+        separated_list1(
+            tuple((line_ending, blank_lines, tag(*prefix.fragment()))),
+            Statement::parse,
+        )(input)
     }
+}
+
+fn blank_lines(input: Span) -> ParseResult<()> {
+    discard(many0(pair(space0, line_ending)))(input)
 }
 
 #[derive(Eq, PartialEq, Debug)]
