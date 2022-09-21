@@ -76,6 +76,7 @@ impl Function {
         let (input, _) = discard(pair(space0, line_ending))(input)?;
         let (input, prefix) = space1(input)?;
 
+        // TODO: Handle blank lines/comments
         separated_list1(pair(line_ending, tag(*prefix.fragment())), Statement::parse)(input)
     }
 }
