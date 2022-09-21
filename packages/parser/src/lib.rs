@@ -4,8 +4,8 @@ use nom::{
     character::complete::{alpha1, alphanumeric1, line_ending, multispace0, space0, space1},
     combinator::{all_consuming, eof, map, opt, recognize},
     error::{context, ErrorKind},
-    multi::{many0, many_till, separated_list1},
-    sequence::{delimited, pair, tuple},
+    multi::{many0, many_till, separated_list0, separated_list1},
+    sequence::{delimited, pair, separated_pair, tuple},
     Finish, IResult,
 };
 use nom_greedyerror::{convert_error, GreedyError};
@@ -60,7 +60,7 @@ impl Function {
         Ok((
             input,
             Function {
-                name: (*name.fragment()).to_owned(),
+                name: name.fragment().to_string(),
                 body,
             },
         ))
@@ -89,20 +89,84 @@ fn blank_lines(input: Span) -> ParseResult<()> {
 }
 
 fn eol(input: Span) -> ParseResult<()> {
+    // TODO: Handle whitespace at end of line
     discard(pair(opt(pair(tag("#"), is_not("\r\n"))), line_ending))(input)
 }
 
 #[derive(Eq, PartialEq, Debug)]
 pub enum Statement {
     Pass,
+    Expression(Expression),
+    // TODO: Loops
 }
 
 impl Statement {
     fn parse(input: Span) -> ParseResult<Self> {
-        let (input, _pass) = context("statement", pass)(input)?;
+        let (input, stmt) = context(
+            "statement",
+            alt((
+                map(pass, |_| Statement::Pass),
+                map(Expression::parse, Statement::Expression),
+            )),
+        )(input)?;
 
-        Ok((input, Statement::Pass))
+        Ok((input, stmt))
     }
+}
+
+#[derive(PartialEq, Eq, Debug)]
+pub enum Expression {
+    Variable { name: String },
+    Call { name: String, args: Vec<Expression> },
+}
+
+impl Expression {
+    fn parse(input: Span) -> ParseResult<Self> {
+        alt((Self::call, Self::variable, Self::parenthasized))(input)
+    }
+
+    fn variable(input: Span) -> ParseResult<Self> {
+        map(identifier, |name| Self::Variable {
+            name: name.fragment().to_string(),
+        })(input)
+    }
+
+    fn call(input: Span) -> ParseResult<Self> {
+        let (input, (name, args)) = context(
+            "call",
+            separated_pair(
+                identifier,
+                space0,
+                delimited(
+                    tag("("),
+                    separated_list0(tag(","), multiline_ws(Self::parse)),
+                    tag(")"),
+                ),
+            ),
+        )(input)?;
+
+        Ok((
+            input,
+            Self::Call {
+                name: name.fragment().to_string(),
+                args,
+            },
+        ))
+    }
+
+    fn parenthasized(input: Span) -> ParseResult<Self> {
+        context(
+            "parenthesized",
+            delimited(tag("("), multiline_ws(Expression::parse), tag(")")),
+        )(input)
+    }
+}
+
+pub enum BinOp {
+    Plus,
+    Minus,
+    Mulitply,
+    Divide,
 }
 
 #[derive(Error, Debug)]
