@@ -4,6 +4,7 @@
 }
 
 .flowchart-container {
+    overflow: scroll;
     background: lightgray;
     padding: 10px;
 }
@@ -12,6 +13,12 @@
     fill: none;
     stroke: black;
     stroke-width: 1;
+}
+
+.arrow-horizontal {
+    width: 50px;
+    min-width: 50px;
+    height: 10px;
 }
 
 .columns {
