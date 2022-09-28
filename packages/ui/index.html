@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 
-<head profile="http://www.w3.org/2005/10/profile">
+<head>
     <meta charset="utf-8" />
     <title>Serpent CI</title>
     <link rel="rust" data-trunk data-wasm-opt="z" />
@@ -10,21 +10,20 @@
 </head>
 
 <body>
-    <svg width="0" height="0" version="2.0">
-        <defs>
-            <marker id="arrow-head" markerWidth="10" markerHeight="10" refX="10" refY="5" orient="0"
-                markerUnits="userSpaceOnUse">
-                <polyline class="arrow" points="0 0, 10 5, 0 10" />
-            </marker>
-        </defs>
-    </svg>
-    <div class="columns">
+    <div class="zero-size">
+        <svg>
+            <defs>
+                <marker id="arrow-head" markerWidth="10" markerHeight="10" refX="10" refY="5" orient="auto">
+                    <polyline class="arrow" points="0 0, 10 5, 0 10" />
+                </marker>
+            </defs>
+        </svg>
+    </div>
+    <div class="columns center-items flowchart-container">
         <div class="function">my_function</div>
-        <div class="arrow-box">
-            <svg viewBox="0 0 50 40">
-                <line class="arrow" x1="0" y1="20" x2="50" y2="20" marker-end="url(#arrow-head)" />
-            </svg>
-        </div>
+        <svg width="50px" height="10px">
+            <line class="arrow" x1="0" y1="5" x2="50" y2="5" marker-end="url(#arrow-head)" />
+        </svg>
         <div class="function">another_function</div>
     </div>
 </body>
