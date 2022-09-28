@@ -1,0 +1,21 @@
+.arrow {
+    fill: none;
+    stroke: black;
+    stroke-width: 1;
+}
+
+.arrow-box {
+    width: 50px;
+}
+
+.columns {
+    display: flex;
+    flex-direction: row;
+}
+
+.function {
+    border-radius: 10px;
+    border: 2px solid black;
+    padding: 10px;
+    background: lightgrey;
+}
