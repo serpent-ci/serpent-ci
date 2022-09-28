@@ -16,13 +16,16 @@
                 <marker id="arrow-head" markerWidth="10" markerHeight="10" refX="10" refY="5" orient="auto">
                     <polyline class="arrow" points="0 0, 10 5, 0 10" />
                 </marker>
+                <symbol id="arrow-right">
+                    <line class="arrow" x1="0" y1="50%" x2="100%" y2="50%" marker-end="url(#arrow-head)" />
+                </symbol>
             </defs>
         </svg>
     </div>
     <div class="columns center-items flowchart-container">
         <div class="function">my_function</div>
         <svg width="50px" height="10px">
-            <line class="arrow" x1="0" y1="5" x2="50" y2="5" marker-end="url(#arrow-head)" />
+            <use href="#arrow-right" />
         </svg>
         <div class="function">another_function</div>
     </div>
