@@ -4,8 +4,14 @@
 <head>
     <meta charset="utf-8" />
     <title>Serpent CI</title>
-    <link rel="rust" data-trunk data-wasm-opt="z" />
-    <link data-trunk rel="css" href="serpent-ci.css" />
+    <link data-trunk rel="css" href="bootstrap.min.css" />
+    <link data-trunk rel="css" href="bootstrap-icons.css" />
+    <link data-trunk rel="copy-dir" href="fonts" />
+    <link data-trunk rel="scss" href="serpent-ci.scss" />
+    <link data-trunk rel="rust" data-wasm-opt="z" />
+    <!-- TODO: `trunk` support for `<script>` is not released yet. -->
+    <!-- This will not be needed when it's released.  -->
+    <link data-trunk rel="copy-file" href="bootstrap.bundle.min.js" />
     <base data-trunk-public-url />
 </head>
 
@@ -23,41 +29,145 @@
             </defs>
         </svg>
     </div>
-    <div class="columns flowchart-container">
-        <div class="function">function</div>
-        <svg class="arrow-horizontal">
-            <use href="#arrow-right" />
-        </svg>
-        <div class="function">another_function
-            <div class="columns flowchart-container margin-top">
-                <div class="function">function</div>
-                <svg class="arrow-horizontal">
-                    <use href="#arrow-right" />
-                </svg>
-                <div class="function">another_function
-                    <div class="columns flowchart-container margin-top">
-                        <div class="function">function</div>
-                        <svg class="arrow-horizontal">
-                            <use href="#arrow-right" />
-                        </svg>
-                        <div class="function">another_function</div>
-                        <svg class="arrow-horizontal">
-                            <use href="#arrow-right" />
-                        </svg>
-                        <div class="function">another_function</div>
+    <div class="flowchart columns scroll">
+        <div class="expanded-function">
+            <div class="btn-group" role="group" aria-label="...">
+                <div class="btn-group" role="group">
+                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton2"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        main_function
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton2">
+                        <li><a class="dropdown-item" href="#">Run</a></li>
+                        <li><a class="dropdown-item" href="#">Pause</a></li>
+                    </ul>
+                </div>
+                <button type="button" class="btn btn-outline-secondary">
+                    <i class="bi-zoom-out"></i>
+                </button>
+            </div>
+            <div class="columns nested-flowchart">
+                <div class="collapsed-function">
+                    <div class="btn-group" role="group" aria-label="...">
+                        <div class="btn-group" role="group">
+                            <button class="btn btn-outline-secondary dropdown-toggle" type="button"
+                                id="dropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false">
+                                function
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton2">
+                                <li><a class="dropdown-item" href="#">Run</a></li>
+                                <li><a class="dropdown-item" href="#">Pause</a></li>
+                            </ul>
+                        </div>
+                        <button type="button" class="btn btn-outline-secondary">
+                            <i class="bi-zoom-in"></i>
+                        </button>
                     </div>
                 </div>
                 <svg class="arrow-horizontal">
                     <use href="#arrow-right" />
                 </svg>
-                <div class="function">another_function</div>
+                <div class="expanded-function">
+                    <div class="btn-group" role="group" aria-label="...">
+                        <div class="btn-group" role="group">
+                            <button class="btn btn-outline-secondary dropdown-toggle" type="button"
+                                id="dropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false">
+                                another_function
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton2">
+                                <li><a class="dropdown-item" href="#">Run</a></li>
+                                <li><a class="dropdown-item" href="#">Pause</a></li>
+                            </ul>
+                        </div>
+                        <button type="button" class="btn btn-outline-secondary">
+                            <i class="bi-zoom-out"></i>
+                        </button>
+                    </div>
+
+                    <div class="columns nested-flowchart">
+                        <div class="collapsed-function">
+                            <div class="btn-group" role="group" aria-label="...">
+                                <div class="btn-group" role="group">
+                                    <button class="btn btn-outline-secondary dropdown-toggle" type="button"
+                                        id="dropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false">
+                                        another_function
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton2">
+                                        <li><a class="dropdown-item" href="#">Run</a></li>
+                                        <li><a class="dropdown-item" href="#">Pause</a></li>
+                                    </ul>
+                                </div>
+                                <button type="button" class="btn btn-outline-secondary">
+                                    <i class="bi-zoom-in"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <svg class="arrow-horizontal">
+                            <use href="#arrow-right" />
+                        </svg>
+                        <div class="collapsed-function">
+                            <div class="btn-group" role="group" aria-label="...">
+                                <div class="btn-group" role="group">
+                                    <button class="btn btn-outline-secondary dropdown-toggle" type="button"
+                                        id="dropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false">
+                                        another_function
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton2">
+                                        <li><a class="dropdown-item" href="#">Run</a></li>
+                                        <li><a class="dropdown-item" href="#">Pause</a></li>
+                                    </ul>
+                                </div>
+                                <button type="button" class="btn btn-outline-secondary">
+                                    <i class="bi-zoom-in"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <svg class="arrow-horizontal">
+                            <use href="#arrow-right" />
+                        </svg>
+                        <div class="collapsed-function">
+                            <div class="btn-group" role="group" aria-label="...">
+                                <div class="btn-group" role="group">
+                                    <button class="btn btn-outline-secondary dropdown-toggle" type="button"
+                                        id="dropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false">
+                                        another_function
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton2">
+                                        <li><a class="dropdown-item" href="#">Run</a></li>
+                                        <li><a class="dropdown-item" href="#">Pause</a></li>
+                                    </ul>
+                                </div>
+                                <button type="button" class="btn btn-outline-secondary">
+                                    <i class="bi-zoom-in"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <svg class="arrow-horizontal">
+                    <use href="#arrow-right" />
+                </svg>
+                <div class="collapsed-function">
+                    <div class="btn-group" role="group" aria-label="...">
+                        <div class="btn-group" role="group">
+                            <button class="btn btn-outline-secondary dropdown-toggle" type="button"
+                                id="dropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false">
+                                another_function
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton2">
+                                <li><a class="dropdown-item" href="#">Run</a></li>
+                                <li><a class="dropdown-item" href="#">Pause</a></li>
+                            </ul>
+                        </div>
+                        <button type="button" class="btn btn-outline-secondary">
+                            <i class="bi-zoom-in"></i>
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
-        <svg class="arrow-horizontal">
-            <use href="#arrow-right" />
-        </svg>
-        <div class="function">another_function</div>
     </div>
+    <script data-trunk src="bootstrap.bundle.min.js"></script>
 </body>
 
 </html>
