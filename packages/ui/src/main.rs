@@ -8,18 +8,18 @@ use silkenweb::{
     prelude::{HtmlElement, ParentBuilder},
 };
 
-mod css {
+mod bs {
     use silkenweb::css_classes;
 
     css_classes!(visibility: pub, path: "bootstrap.min.css");
 }
 
 fn button_group() -> DivBuilder {
-    div().class([css::BTN_GROUP]).attribute("role", "group")
+    div().class([bs::BTN_GROUP]).attribute("role", "group")
 }
 
 fn dropdown_item(name: &str) -> LiBuilder {
-    li().child(a().class([css::DROPDOWN_ITEM]).href("#").text(name))
+    li().child(a().class([bs::DROPDOWN_ITEM]).href("#").text(name))
 }
 
 fn function(name: &str, icon: &str) -> DivBuilder {
@@ -33,7 +33,7 @@ fn function(name: &str, icon: &str) -> DivBuilder {
                 button_group()
                     .child(
                         button()
-                            .class([css::BTN, css::BTN_OUTLINE_SECONDARY, css::DROPDOWN_TOGGLE])
+                            .class([bs::BTN, bs::BTN_OUTLINE_SECONDARY, bs::DROPDOWN_TOGGLE])
                             .id("TODO")
                             .attribute("data-bs-toggle", "dropdown")
                             .r#type("button")
@@ -41,7 +41,7 @@ fn function(name: &str, icon: &str) -> DivBuilder {
                             .text(name),
                     )
                     .child(
-                        ul().class([css::DROPDOWN_MENU])
+                        ul().class([bs::DROPDOWN_MENU])
                             .attribute("aria-labelledby", "TODO")
                             .children([dropdown_item("Run"), dropdown_item("Pause")]),
                     ),
@@ -49,7 +49,7 @@ fn function(name: &str, icon: &str) -> DivBuilder {
             .child(
                 button()
                     .r#type("button")
-                    .class([css::BTN, css::BTN_OUTLINE_SECONDARY])
+                    .class([bs::BTN, bs::BTN_OUTLINE_SECONDARY])
                     .child(i().class([icon])),
             ),
     )
