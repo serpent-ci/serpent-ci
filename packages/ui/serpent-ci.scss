@@ -1,3 +1,11 @@
+:root {
+    --line-height: 1.2;
+    --padding: 10px;
+    --border-radius: 10px;
+    --stroke-width: 2px;
+    --arrow-length: 50px;
+}
+
 .zero-size {
     width: 0;
     height: 0;
@@ -6,19 +14,20 @@
 .flowchart-container {
     overflow: scroll;
     background: lightgray;
-    padding: 10px;
+    padding: var(--padding);
 }
 
 .arrow {
     fill: none;
     stroke: black;
-    stroke-width: 1;
+    stroke-width: var(--stroke-width);
 }
 
 .arrow-horizontal {
-    width: 50px;
-    min-width: 50px;
-    height: 10px;
+    width: var(--arrow-length);
+    min-width: var(--arrow-length);
+    height: calc(1em * var(--line-height));
+    padding-block: calc(var(--padding) + var(--stroke-width));
 }
 
 .columns {
@@ -26,13 +35,11 @@
     flex-direction: row;
 }
 
-.center-items {
-    align-items: center;
-}
-
 .function {
-    border-radius: 10px;
-    border: 2px solid black;
-    padding: 10px;
+    line-height: var(--line-height);
+    border-radius: var(--border-radius);
+    border: var(--stroke-width) solid black;
+    padding: var(--padding);
     background: white;
+    align-self: flex-start;
 }
