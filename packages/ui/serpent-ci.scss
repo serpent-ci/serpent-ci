@@ -16,15 +16,15 @@
 }
 
 .flowchart {
-    background: lightgray;
-    padding: var(--padding);
+    // background: lightgray;
+    // padding: var(--padding);
 }
 
 .nested-flowchart {
     @extend .flowchart;
-    border-radius: var(--border-radius);
-    border: var(--stroke-width) solid black;
-    margin-top: var(--padding);
+    // border-radius: var(--border-radius);
+    // border: var(--stroke-width) solid black;
+    // margin: var(--padding);
 }
 
 .arrow {
@@ -40,17 +40,27 @@
     padding-block: calc(var(--padding) + var(--stroke-width));
 }
 
+.arrow-vertical {
+    height: var(--arrow-length);
+    min-height: var(--arrow-length);
+    width: 40px; // calc(1em * var(--line-height));
+    padding-inline: calc(var(--padding) + var(--stroke-width));
+}
+
 .columns {
     display: flex;
     flex-direction: row;
 }
 
 @mixin function {
+    display: flex;
+    flex-direction: column;
     line-height: var(--line-height);
-    border-radius: var(--border-radius);
+    // border-radius: var(--border-radius);
     // border: var(--stroke-width) solid black;
-    background: white;
+    // background: white;
     align-self: flex-start;
+    align-items: flex-start;
 }
 
 .collapsed-function {
@@ -60,5 +70,7 @@
 
 .expanded-function {
     @include function;
-    padding: var(--padding);
+    padding: 0; //var(--padding);
+    border-width: var(--stroke-width);
+    border-style: solid;
 }

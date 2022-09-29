@@ -26,11 +26,15 @@
                 <symbol id="arrow-right">
                     <line class="arrow" x1="0" y1="50%" x2="100%" y2="50%" marker-end="url(#arrow-head)" />
                 </symbol>
+                <symbol id="arrow-down">
+                    <line class="arrow" x1="50%" y1="0" x2="50%" y2="100%" marker-end="url(#arrow-head)" />
+                </symbol>
             </defs>
         </svg>
     </div>
+    <div id="app"></div>
     <div class="flowchart columns scroll">
-        <div class="expanded-function">
+        <div class="expanded-function border-secondary">
             <div class="btn-group" role="group" aria-label="...">
                 <div class="btn-group" role="group">
                     <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton2"
@@ -46,6 +50,9 @@
                     <i class="bi-zoom-out"></i>
                 </button>
             </div>
+            <svg class="arrow-vertical">
+                <use href="#arrow-down" />
+            </svg>
             <div class="columns nested-flowchart">
                 <div class="collapsed-function">
                     <div class="btn-group" role="group" aria-label="...">
@@ -67,102 +74,92 @@
                 <svg class="arrow-horizontal">
                     <use href="#arrow-right" />
                 </svg>
-                <div class="expanded-function">
-                    <div class="btn-group" role="group" aria-label="...">
-                        <div class="btn-group" role="group">
-                            <button class="btn btn-outline-secondary dropdown-toggle" type="button"
-                                id="dropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false">
-                                another_function
+                <div class="border-secondary">
+                    <div class="expanded-function border-secondary">
+                        <div class="btn-group" role="group" aria-label="...">
+                            <div class="btn-group" role="group">
+                                <button class="btn btn-outline-secondary dropdown-toggle" type="button"
+                                    id="dropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false">
+                                    another_functionxyzfksdfkljsdlfkjds;lfkj;szdlfkj;zsdlfkj;sdlzkjf;lszdkf;kszd;flkzs'dlf;ks'zdfksz;ldkfdjkhglkdfjhgldkjxfhglkjxdfhglkjdfhglkjdxfgkljhdxfkgjhdkxjghkdxjfghlkxfdjghlkdfjhglkdfjhglkdfjhgkldfjhghhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton2">
+                                    <li><a class="dropdown-item" href="#">Run</a></li>
+                                    <li><a class="dropdown-item" href="#">Pause</a></li>
+                                </ul>
+                            </div>
+                            <button type="button" class="btn btn-outline-secondary">
+                                <i class="bi-zoom-out"></i>
                             </button>
-                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton2">
-                                <li><a class="dropdown-item" href="#">Run</a></li>
-                                <li><a class="dropdown-item" href="#">Pause</a></li>
-                            </ul>
                         </div>
-                        <button type="button" class="btn btn-outline-secondary">
-                            <i class="bi-zoom-out"></i>
-                        </button>
+                        <svg class="arrow-vertical">
+                            <use href="#arrow-down" />
+                        </svg>
+                        <div class="columns nested-flowchart">
+                            <div class="collapsed-function">
+                                <div class="btn-group" role="group" aria-label="...">
+                                    <div class="btn-group" role="group">
+                                        <button class="btn btn-outline-secondary dropdown-toggle" type="button"
+                                            id="dropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false">
+                                            another_function
+                                        </button>
+                                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton2">
+                                            <li><a class="dropdown-item" href="#">Run</a></li>
+                                            <li><a class="dropdown-item" href="#">Pause</a></li>
+                                        </ul>
+                                    </div>
+                                    <button type="button" class="btn btn-outline-secondary">
+                                        <i class="bi-zoom-in"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <svg class="arrow-horizontal">
+                                <use href="#arrow-right" />
+                            </svg>
+                            <div class="collapsed-function">
+                                <div class="btn-group" role="group" aria-label="...">
+                                    <div class="btn-group" role="group">
+                                        <button class="btn btn-outline-secondary dropdown-toggle" type="button"
+                                            id="dropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false">
+                                            another_function
+                                        </button>
+                                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton2">
+                                            <li><a class="dropdown-item" href="#">Run</a></li>
+                                            <li><a class="dropdown-item" href="#">Pause</a></li>
+                                        </ul>
+                                    </div>
+                                    <button type="button" class="btn btn-outline-secondary">
+                                        <i class="bi-zoom-in"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <svg class="arrow-horizontal">
+                                <use href="#arrow-right" />
+                            </svg>
+                        </div>
                     </div>
-
-                    <div class="columns nested-flowchart">
-                        <div class="collapsed-function">
-                            <div class="btn-group" role="group" aria-label="...">
-                                <div class="btn-group" role="group">
-                                    <button class="btn btn-outline-secondary dropdown-toggle" type="button"
-                                        id="dropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false">
-                                        another_function
-                                    </button>
-                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton2">
-                                        <li><a class="dropdown-item" href="#">Run</a></li>
-                                        <li><a class="dropdown-item" href="#">Pause</a></li>
-                                    </ul>
-                                </div>
-                                <button type="button" class="btn btn-outline-secondary">
-                                    <i class="bi-zoom-in"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <svg class="arrow-horizontal">
-                            <use href="#arrow-right" />
-                        </svg>
-                        <div class="collapsed-function">
-                            <div class="btn-group" role="group" aria-label="...">
-                                <div class="btn-group" role="group">
-                                    <button class="btn btn-outline-secondary dropdown-toggle" type="button"
-                                        id="dropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false">
-                                        another_function
-                                    </button>
-                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton2">
-                                        <li><a class="dropdown-item" href="#">Run</a></li>
-                                        <li><a class="dropdown-item" href="#">Pause</a></li>
-                                    </ul>
-                                </div>
-                                <button type="button" class="btn btn-outline-secondary">
-                                    <i class="bi-zoom-in"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <svg class="arrow-horizontal">
-                            <use href="#arrow-right" />
-                        </svg>
-                        <div class="collapsed-function">
-                            <div class="btn-group" role="group" aria-label="...">
-                                <div class="btn-group" role="group">
-                                    <button class="btn btn-outline-secondary dropdown-toggle" type="button"
-                                        id="dropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false">
-                                        another_function
-                                    </button>
-                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton2">
-                                        <li><a class="dropdown-item" href="#">Run</a></li>
-                                        <li><a class="dropdown-item" href="#">Pause</a></li>
-                                    </ul>
-                                </div>
-                                <button type="button" class="btn btn-outline-secondary">
-                                    <i class="bi-zoom-in"></i>
-                                </button>
-                            </div>
-                        </div>
+                    <div class="dropdown">
+                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton2"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            endx
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton2">
+                            <li><a class="dropdown-item" href="#">Run</a></li>
+                            <li><a class="dropdown-item" href="#">Pause</a></li>
+                        </ul>
                     </div>
                 </div>
                 <svg class="arrow-horizontal">
                     <use href="#arrow-right" />
                 </svg>
-                <div class="collapsed-function">
-                    <div class="btn-group" role="group" aria-label="...">
-                        <div class="btn-group" role="group">
-                            <button class="btn btn-outline-secondary dropdown-toggle" type="button"
-                                id="dropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false">
-                                another_function
-                            </button>
-                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton2">
-                                <li><a class="dropdown-item" href="#">Run</a></li>
-                                <li><a class="dropdown-item" href="#">Pause</a></li>
-                            </ul>
-                        </div>
-                        <button type="button" class="btn btn-outline-secondary">
-                            <i class="bi-zoom-in"></i>
-                        </button>
-                    </div>
+                <div class="dropdown">
+                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton2"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        end
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton2">
+                        <li><a class="dropdown-item" href="#">Run</a></li>
+                        <li><a class="dropdown-item" href="#">Pause</a></li>
+                    </ul>
                 </div>
             </div>
         </div>
