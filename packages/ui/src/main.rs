@@ -104,7 +104,7 @@ fn expanded_function(name: &str, children: impl IntoIterator<Item = Div>) -> Div
 fn main() {
     mount(
         "app",
-        expanded_function(
+        div().class([bs::OVERFLOW_AUTO]).child(expanded_function(
             "main_function",
             [
                 collapsed_function("function1"),
@@ -117,6 +117,6 @@ fn main() {
                 ),
                 collapsed_function("function2"),
             ],
-        ),
+        )),
     );
 }

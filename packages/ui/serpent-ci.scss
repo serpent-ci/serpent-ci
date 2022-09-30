@@ -1,30 +1,8 @@
 :root {
     --line-height: 1.2;
     --padding: 10px;
-    --border-radius: 6px;
     --stroke-width: 1px;
     --arrow-length: 50px;
-}
-
-.zero-size {
-    width: 0;
-    height: 0;
-}
-
-.scroll {
-    overflow: scroll;
-}
-
-.flowchart {
-    // background: lightgray;
-    // padding: var(--padding);
-}
-
-.nested-flowchart {
-    @extend .flowchart;
-    // border-radius: var(--border-radius);
-    // border: var(--stroke-width) solid black;
-    // margin: var(--padding);
 }
 
 .arrow {
@@ -45,32 +23,4 @@
     min-height: var(--arrow-length);
     width: 40px; // calc(1em * var(--line-height));
     padding-inline: calc(var(--padding) + var(--stroke-width));
-}
-
-.columns {
-    display: flex;
-    flex-direction: row;
-}
-
-@mixin function {
-    display: flex;
-    flex-direction: column;
-    line-height: var(--line-height);
-    // border-radius: var(--border-radius);
-    // border: var(--stroke-width) solid black;
-    // background: white;
-    align-self: flex-start;
-    align-items: flex-start;
-}
-
-.collapsed-function {
-    @include function;
-    padding: 0;
-}
-
-.expanded-function {
-    @include function;
-    padding: 0; //var(--padding);
-    border-width: var(--stroke-width);
-    border-style: solid;
 }
