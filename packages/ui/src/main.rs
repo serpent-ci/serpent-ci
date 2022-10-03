@@ -1,8 +1,7 @@
 use silkenweb::{
     elements::{
         html::{a, button, div, i, li, ul, Div, DivBuilder, LiBuilder},
-        svg::{r#use, svg, Svg},
-        SvgElement,
+        svg::{attributes::Global, r#use, svg, Svg},
     },
     mount,
     node::element::ElementBuilder,
