@@ -2,6 +2,7 @@ use silkenweb::{
     elements::{
         html::{a, button, div, i, li, ul, Div, DivBuilder, LiBuilder},
         svg::{attributes::Global, r#use, svg, Svg},
+        AriaElement,
     },
     mount,
     node::element::ElementBuilder,
@@ -21,7 +22,7 @@ mod css {
 }
 
 fn button_group() -> DivBuilder {
-    div().class([bs::BTN_GROUP]).attribute("role", "group")
+    div().class([bs::BTN_GROUP]).role("group")
 }
 
 fn dropdown_item(name: &str) -> LiBuilder {
@@ -29,14 +30,12 @@ fn dropdown_item(name: &str) -> LiBuilder {
 }
 
 fn function(name: &str, icon: &str) -> DivBuilder {
-    // TODO: Add `aria` stuff to silkenweb so we don't need to use `attribute`
-    // TODO: `role("group")`
     // TODO: Dropdown id
     div()
         .class([bs::D_FLEX, bs::FLEX_COLUMN, bs::ALIGN_ITEMS_START])
         .child(
             button_group()
-                .attribute("aria-label", format!("Function {name}"))
+                .aria_label(format!("Function {name}"))
                 .child(
                     button_group()
                         .child(
@@ -45,12 +44,12 @@ fn function(name: &str, icon: &str) -> DivBuilder {
                                 .id("TODO")
                                 .attribute("data-bs-toggle", "dropdown")
                                 .r#type("button")
-                                .attribute("aria-expanded", "false")
+                                .aria_expanded("false")
                                 .text(name),
                         )
                         .child(
                             ul().class([bs::DROPDOWN_MENU])
-                                .attribute("aria-labelledby", "TODO")
+                                .aria_labelledby("TODO")
                                 .children([dropdown_item("Run"), dropdown_item("Pause")]),
                         ),
                 )
