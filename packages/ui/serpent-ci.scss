@@ -2,6 +2,7 @@
 
 :root {
     --padding: 12px;
+    --arrow-size: 12px;
     --stroke-width: 1px;
     --arrow-length: 40px;
     // TODO: Use bootstrap colors (scss variables)
@@ -9,16 +10,15 @@
 }
 
 .arrow {
-    fill: none;
-    stroke: var(--secondary-colour);
-    stroke-width: var(--stroke-width);
-    width: 12px;
-    min-width: 12px;
-    height: 12px;
-    min-height: 12px;
+    background: var(--secondary-colour);
+    min-width: var(--arrow-size);
+    max-width: var(--arrow-size);
+    min-height: var(--arrow-size);
+    max-height: var(--arrow-size);
+    clip-path: polygon(0 0, 0 100%, 100% 50%);
 }
 
-.line-horizontal {
+.horizontal-line {
     min-width: var(--arrow-length);
     stroke: var(--secondary-colour);
     stroke-width: var(--stroke-width);
@@ -32,11 +32,11 @@
 
 @mixin speech-bubble-arrow-top {
     border: var(--padding) solid transparent;
-    border-width: 12px;
+    border-width: var(--arrow-size);
     content: "";
-    margin-left: 12px;
+    margin-left: var(--arrow-size);
     position: absolute;
-    left: 12px;
+    left: var(--arrow-size);
     width: 0;
     height: 0;
 }
