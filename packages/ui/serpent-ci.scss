@@ -1,26 +1,26 @@
 :root {
-    --line-height: 1.2;
-    --padding: 10px;
+    --padding: 12px;
     --stroke-width: 1px;
-    --arrow-length: 50px;
+    --arrow-length: 40px;
 }
 
 .arrow {
     fill: none;
+    // TODO: Use bootstrap colors
     stroke: black;
     stroke-width: var(--stroke-width);
 }
 
 .arrow-horizontal {
-    width: var(--arrow-length);
     min-width: var(--arrow-length);
-    height: 40px; // calc(1em * var(--line-height));
-    padding-block: calc(var(--padding) + var(--stroke-width));
+    height: 100%;
 }
 
-.arrow-vertical {
-    height: var(--arrow-length);
-    min-height: var(--arrow-length);
-    width: 40px; // calc(1em * var(--line-height));
-    padding-inline: calc(var(--padding) + var(--stroke-width));
+.function-body {
+    margin-top: var(--padding);
+    padding: var(--padding);
+}
+
+.margin {
+    margin: var(--padding);
 }

@@ -1,11 +1,15 @@
 use silkenweb::{
     elements::{
-        html::{a, button, div, i, li, ul, Div, DivBuilder, LiBuilder},
-        svg::{attributes::Global, r#use, svg, Svg},
+        html::{a, button, div, i, li, ul, DivBuilder, LiBuilder},
+        svg::{
+            attributes::Global,
+            content_type::{Length::Px, Percentage},
+            r#use, svg,
+        },
         AriaElement,
     },
     mount,
-    node::element::ElementBuilder,
+    node::element::{Element, ElementBuilder},
     prelude::{HtmlElement, ParentBuilder},
 };
 
@@ -29,92 +33,102 @@ fn dropdown_item(name: &str) -> LiBuilder {
     li().child(a().class([bs::DROPDOWN_ITEM]).href("#").text(name))
 }
 
-fn function(name: &str, icon: &str) -> DivBuilder {
+fn row<'a>(classes: impl IntoIterator<Item = &'a str>) -> DivBuilder {
+    div().class(classes.into_iter().chain([bs::D_FLEX, bs::FLEX_ROW]))
+}
+
+fn column<'a>(classes: impl IntoIterator<Item = &'a str>) -> DivBuilder {
+    div().class(classes.into_iter().chain([bs::D_FLEX, bs::FLEX_COLUMN]))
+}
+
+fn function(name: &str, icon: &str, is_last: bool) -> Element {
     // TODO: Dropdown id
-    div()
-        .class([bs::D_FLEX, bs::FLEX_COLUMN, bs::ALIGN_ITEMS_START])
+    let function = button_group()
+        .aria_label(format!("Function {name}"))
         .child(
             button_group()
-                .aria_label(format!("Function {name}"))
-                .child(
-                    button_group()
-                        .child(
-                            button()
-                                .class([bs::BTN, bs::BTN_OUTLINE_SECONDARY, bs::DROPDOWN_TOGGLE])
-                                .id("TODO")
-                                .attribute("data-bs-toggle", "dropdown")
-                                .r#type("button")
-                                .aria_expanded("false")
-                                .text(name),
-                        )
-                        .child(
-                            ul().class([bs::DROPDOWN_MENU])
-                                .aria_labelledby("TODO")
-                                .children([dropdown_item("Run"), dropdown_item("Pause")]),
-                        ),
-                )
                 .child(
                     button()
+                        .class([bs::BTN, bs::BTN_OUTLINE_SECONDARY, bs::DROPDOWN_TOGGLE])
+                        .id("TODO")
+                        .attribute("data-bs-toggle", "dropdown")
                         .r#type("button")
-                        .class([bs::BTN, bs::BTN_OUTLINE_SECONDARY])
-                        .child(i().class([icon])),
+                        .aria_expanded("false")
+                        .text(name),
+                )
+                .child(
+                    ul().class([bs::DROPDOWN_MENU])
+                        .aria_labelledby("TODO")
+                        .children([dropdown_item("Run"), dropdown_item("Pause")]),
                 ),
         )
+        .child(
+            button()
+                .r#type("button")
+                .class([bs::BTN, bs::BTN_OUTLINE_SECONDARY])
+                .child(i().class([icon])),
+        );
+
+    if is_last {
+        column([bs::ALIGN_ITEMS_START]).child(function)
+    } else {
+        column([]).child(
+            row([bs::ALIGN_ITEMS_CENTER])
+                .child(function)
+                .child(arrow_right()),
+        )
+    }
+    .into()
 }
 
-fn collapsed_function(name: &str) -> Div {
-    function(name, "bi-zoom-in").build()
+fn collapsed_function(name: &str, is_last: bool) -> Element {
+    function(name, "bi-zoom-in", is_last)
 }
 
-fn arrow_down() -> Svg {
-    svg()
-        .class([css::ARROW_VERTICAL])
-        .child(r#use().href("#arrow-down"))
-        .build()
-}
-
-fn arrow_right() -> Svg {
+fn arrow_right() -> Element {
     svg()
         .class([css::ARROW_HORIZONTAL])
+        .width(Percentage(100.0))
+        .height(Px(20.0))
         .child(r#use().href("#arrow-right"))
-        .build()
+        .into()
 }
 
-fn expanded_function(name: &str, children: impl IntoIterator<Item = Div>) -> Div {
-    let mut child_elems = div().class([bs::D_FLEX, bs::FLEX_ROW]);
-    let mut children = children.into_iter();
+fn expanded_function(
+    name: &str,
+    body: impl IntoIterator<Item = Element>,
+    is_last: bool,
+) -> Element {
+    let body = row([
+        css::FUNCTION_BODY,
+        bs::BORDER,
+        bs::BORDER_SECONDARY,
+        bs::ROUNDED,
+    ])
+    .children(body);
+    let main = function(name, "bi-zoom-out", is_last);
 
-    if let Some(child) = children.next() {
-        child_elems = child_elems.child(child);
-    }
-
-    for child in children {
-        child_elems = child_elems.child(arrow_right());
-        child_elems = child_elems.child(child);
-    }
-
-    function(name, "bi-zoom-out")
-        .child(arrow_down())
-        .child(child_elems)
-        .build()
+    column([]).child(main).child(body).into()
 }
 
 fn main() {
     mount(
         "app",
-        div().class([bs::OVERFLOW_AUTO]).child(expanded_function(
+        row([css::MARGIN, bs::ALIGN_ITEMS_START, bs::OVERFLOW_AUTO]).child(expanded_function(
             "main_function",
             [
-                collapsed_function("function1"),
+                collapsed_function("function1", false),
                 expanded_function(
                     "another_function",
                     [
-                        collapsed_function("child_function1"),
-                        collapsed_function("child_function2"),
+                        collapsed_function("child_function1", false),
+                        collapsed_function("child_function2", true),
                     ],
+                    false,
                 ),
-                collapsed_function("function2"),
+                collapsed_function("function2", true),
             ],
+            true,
         )),
     );
 }
