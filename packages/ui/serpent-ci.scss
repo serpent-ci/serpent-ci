@@ -1,3 +1,5 @@
+// TODO: Arrows get stretched so diagrams fill entire width
+
 :root {
     --padding: 12px;
     --stroke-width: 1px;
@@ -23,30 +25,27 @@
     position: relative;
 }
 
-.function-body:before {
+@mixin speech-bubble-arrow-top {
     border: var(--padding) solid transparent;
-    border-bottom-color: var(--secondary-colour);
     border-width: 12px;
     content: "";
     margin-left: 12px;
     position: absolute;
-    top: -24px;
     left: 12px;
     width: 0;
     height: 0;
 }
 
+.function-body:before {
+    @include speech-bubble-arrow-top;
+    border-bottom-color: var(--secondary-colour);
+    top: -24px;
+}
+
 .function-body:after {
-    border: var(--padding) solid transparent;
+    @include speech-bubble-arrow-top;
     border-bottom-color: white;
-    border-width: 12px;
-    content: "";
-    margin-left: 12px;
-    position: absolute;
     top: -23px;
-    left: 12px;
-    width: 0;
-    height: 0;
 }
 
 .margin {
