@@ -12,10 +12,16 @@
     fill: none;
     stroke: var(--secondary-colour);
     stroke-width: var(--stroke-width);
+    width: 12px;
+    min-width: 12px;
+    height: 12px;
+    min-height: 12px;
 }
 
-.arrow-horizontal {
+.line-horizontal {
     min-width: var(--arrow-length);
+    stroke: var(--secondary-colour);
+    stroke-width: var(--stroke-width);
 }
 
 .function-body {

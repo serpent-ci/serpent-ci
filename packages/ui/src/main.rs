@@ -75,6 +75,7 @@ fn function(name: &str, icon: &str, is_last: bool) -> Element {
         column([bs::ALIGN_ITEMS_STRETCH]).child(
             row([bs::ALIGN_ITEMS_CENTER])
                 .child(function)
+                .child(horizontal_line())
                 .child(arrow_right()),
         )
     }
@@ -85,13 +86,20 @@ fn collapsed_function(name: &str, is_last: bool) -> Element {
     function(name, "bi-zoom-in", is_last)
 }
 
-fn arrow_right() -> Element {
+fn horizontal_line() -> Element {
     svg()
-        .class([css::ARROW_HORIZONTAL])
+        .class([css::LINE_HORIZONTAL])
         .width(Percentage(100.0))
         .height(Px(20.0))
         .view_box("0 0 100 100")
         .preserve_aspect_ratio("none")
+        .child(r#use().href("#horizontal-line"))
+        .into()
+}
+
+fn arrow_right() -> Element {
+    svg()
+        .class([css::ARROW])
         .child(r#use().href("#arrow-right"))
         .into()
 }

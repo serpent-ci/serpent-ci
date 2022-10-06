@@ -18,13 +18,13 @@
 <body>
     <svg class="d-flex" width="0" height="0">
         <defs>
-            <marker id="arrow-head" markerWidth="10" markerHeight="10" refX="10" refY="5" orient="auto"
-                markerUnits="userSpaceOnUse">
-                <polyline vector-effect="non-scaling-size" class="arrow" points="0 0, 10 5, 0 10" />
-            </marker>
             <symbol id="arrow-right">
-                <line vector-effect="non-scaling-stroke" class="arrow" x1="0" y1="50%" x2="100%" y2="50%"
-                    marker-end="url(#arrow-head)" />
+                <line class="arrow" x1="0" y1="0" x2="100%" y2="50%" />
+                <line class="arrow" x1="0" y1="50%" x2="100%" y2="50%" />
+                <line class="arrow" x1="0" y1="100%" x2="100%" y2="50%" />
+            </symbol>
+            <symbol id="horizontal-line">
+                <line vector-effect="non-scaling-stroke" class="arrow" x1="0" y1="50%" x2="100%" y2="50%" />
             </symbol>
         </defs>
     </svg>
