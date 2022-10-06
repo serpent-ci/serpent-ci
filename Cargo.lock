@@ -811,7 +811,7 @@ dependencies = [
 [[package]]
 name = "silkenweb"
 version = "0.3.0"
-source = "git+https://github.com/silkenweb/silkenweb#a04e40c4532565171de7f2cb5eeb7990e9d6d33f"
+source = "git+https://github.com/silkenweb/silkenweb#b13ec865689896112079c2c44ed00e97df4b0aae"
 dependencies = [
  "caseless",
  "discard",
@@ -831,7 +831,7 @@ dependencies = [
 [[package]]
 name = "silkenweb-base"
 version = "0.3.0"
-source = "git+https://github.com/silkenweb/silkenweb#a04e40c4532565171de7f2cb5eeb7990e9d6d33f"
+source = "git+https://github.com/silkenweb/silkenweb#b13ec865689896112079c2c44ed00e97df4b0aae"
 dependencies = [
  "js-sys",
  "wasm-bindgen",
@@ -841,7 +841,7 @@ dependencies = [
 [[package]]
 name = "silkenweb-macros"
 version = "0.3.0"
-source = "git+https://github.com/silkenweb/silkenweb#a04e40c4532565171de7f2cb5eeb7990e9d6d33f"
+source = "git+https://github.com/silkenweb/silkenweb#b13ec865689896112079c2c44ed00e97df4b0aae"
 dependencies = [
  "cssparser",
  "grass",

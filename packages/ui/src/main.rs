@@ -72,7 +72,7 @@ fn function(name: &str, icon: &str, is_last: bool) -> Element {
     if is_last {
         column([bs::ALIGN_ITEMS_START]).child(function)
     } else {
-        column([]).child(
+        column([bs::ALIGN_ITEMS_STRETCH]).child(
             row([bs::ALIGN_ITEMS_CENTER])
                 .child(function)
                 .child(arrow_right()),
@@ -90,6 +90,8 @@ fn arrow_right() -> Element {
         .class([css::ARROW_HORIZONTAL])
         .width(Percentage(100.0))
         .height(Px(20.0))
+        .view_box("0 0 100 100")
+        .preserve_aspect_ratio("none")
         .child(r#use().href("#arrow-right"))
         .into()
 }
@@ -108,13 +110,16 @@ fn expanded_function(
     .children(body);
     let main = function(name, "bi-zoom-out", is_last);
 
-    column([]).child(main).child(body).into()
+    column([bs::ALIGN_ITEMS_STRETCH])
+        .child(main)
+        .child(body)
+        .into()
 }
 
 fn main() {
     mount(
         "app",
-        row([css::MARGIN, bs::ALIGN_ITEMS_START, bs::OVERFLOW_AUTO]).child(expanded_function(
+        column([css::MARGIN, bs::ALIGN_ITEMS_START, bs::OVERFLOW_AUTO]).child(expanded_function(
             "main_function",
             [
                 collapsed_function("function1", false),
