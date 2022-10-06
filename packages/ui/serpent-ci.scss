@@ -2,12 +2,13 @@
     --padding: 12px;
     --stroke-width: 1px;
     --arrow-length: 40px;
+    // TODO: Use bootstrap colors (scss variables)
+    --secondary-colour: #6c757d;
 }
 
 .arrow {
     fill: none;
-    // TODO: Use bootstrap colors
-    stroke: black;
+    stroke: var(--secondary-colour);
     stroke-width: var(--stroke-width);
 }
 
@@ -19,6 +20,33 @@
 .function-body {
     margin-top: var(--padding);
     padding: var(--padding);
+    position: relative;
+}
+
+.function-body:before {
+    border: var(--padding) solid transparent;
+    border-bottom-color: var(--secondary-colour);
+    border-width: 12px;
+    content: "";
+    margin-left: 12px;
+    position: absolute;
+    top: -24px;
+    left: 12px;
+    width: 0;
+    height: 0;
+}
+
+.function-body:after {
+    border: var(--padding) solid transparent;
+    border-bottom-color: white;
+    border-width: 12px;
+    content: "";
+    margin-left: 12px;
+    position: absolute;
+    top: -23px;
+    left: 12px;
+    width: 0;
+    height: 0;
 }
 
 .margin {
