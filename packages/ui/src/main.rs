@@ -49,7 +49,7 @@ fn function(name: &str, icon: &str, is_last: bool) -> Element {
             button_group()
                 .child(
                     button()
-                        .class([bs::BTN, bs::BTN_OUTLINE_SECONDARY, bs::DROPDOWN_TOGGLE])
+                        .class([bs::BTN, bs::BTN_SECONDARY, bs::DROPDOWN_TOGGLE])
                         .id("TODO")
                         .attribute("data-bs-toggle", "dropdown")
                         .r#type("button")
@@ -65,7 +65,7 @@ fn function(name: &str, icon: &str, is_last: bool) -> Element {
         .child(
             button()
                 .r#type("button")
-                .class([bs::BTN, bs::BTN_OUTLINE_SECONDARY])
+                .class([bs::BTN, bs::BTN_SECONDARY])
                 .child(i().class([icon])),
         );
 
