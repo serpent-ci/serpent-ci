@@ -35,11 +35,11 @@
 .speech-bubble-top:before {
     @include speech-bubble-arrow-top;
     border-bottom-color: var(--bs-secondary);
-    top: calc(- 2 * var(--arrow-size));
+    top: calc(-2 * var(--arrow-size));
 }
 
 .speech-bubble-top:after {
     @include speech-bubble-arrow-top;
     border-bottom-color: var(--bs-white);
-    top: calc(- 2 * var(--arrow-size) + 1px);
+    top: calc(-2 * var(--arrow-size) + 1px);
 }
