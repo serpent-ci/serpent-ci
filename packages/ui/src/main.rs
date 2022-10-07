@@ -1,3 +1,5 @@
+use std::sync::atomic::{AtomicU64, Ordering};
+
 use silkenweb::{
     elements::{
         html::{a, button, div, i, li, ul, DivBuilder, LiBuilder},
@@ -21,11 +23,16 @@ mod css {
 }
 
 fn dropdown(name: &str) -> Element {
+    static ID_COUNTER: AtomicU64 = AtomicU64::new(0);
+
+    let id = ID_COUNTER.fetch_add(1, Ordering::SeqCst);
+    let id = format!("dropdown-{id}");
+
     button_group()
         .child(
             button()
                 .class([bs::BTN, bs::BTN_SECONDARY, bs::DROPDOWN_TOGGLE])
-                .id("TODO")
+                .id(&id)
                 .attribute("data-bs-toggle", "dropdown")
                 .r#type("button")
                 .aria_expanded("false")
@@ -33,7 +40,7 @@ fn dropdown(name: &str) -> Element {
         )
         .child(
             ul().class([bs::DROPDOWN_MENU])
-                .aria_labelledby("TODO")
+                .aria_labelledby(id)
                 .children([dropdown_item("Run"), dropdown_item("Pause")]),
         )
         .into()
@@ -56,7 +63,6 @@ fn column<'a>(classes: impl IntoIterator<Item = &'a str>) -> DivBuilder {
 }
 
 fn function(name: &str, icon: &str) -> Element {
-    // TODO: Dropdown id
     let function = button_group()
         .aria_label(format!("Function {name}"))
         .child(dropdown(name))
