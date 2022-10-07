@@ -107,7 +107,10 @@ fn expanded_function(
     is_last: bool,
 ) -> Element {
     let body = row([
-        css::FUNCTION_BODY,
+        css::SPEECH_BUBBLE_TOP,
+        bs::SHADOW,
+        bs::MT_3,
+        bs::P_3,
         bs::BORDER,
         bs::BORDER_SECONDARY,
         bs::ROUNDED,
@@ -124,7 +127,7 @@ fn expanded_function(
 fn main() {
     mount(
         "app",
-        column([css::MARGIN, bs::ALIGN_ITEMS_START, bs::OVERFLOW_AUTO]).child(expanded_function(
+        column([bs::M_3, bs::ALIGN_ITEMS_START, bs::OVERFLOW_AUTO]).child(expanded_function(
             "main_function",
             [
                 collapsed_function("function1", false),
