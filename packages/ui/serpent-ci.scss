@@ -1,26 +1,20 @@
-// TODO: Arrows get stretched so diagrams fill entire width
-
 :root {
-    --padding: 12px;
     --arrow-size: 12px;
     --stroke-width: 1px;
     --arrow-length: 40px;
-    // TODO: Use bootstrap colors (scss variables)
-    --secondary-colour: #6c757d;
 }
 
 .arrow {
-    background: var(--secondary-colour);
-    min-width: var(--arrow-size);
-    max-width: var(--arrow-size);
-    min-height: var(--arrow-size);
-    max-height: var(--arrow-size);
+    background: var(--bs-secondary);
+    width: var(--arrow-size);
+    height: var(--arrow-size);
+    flex: none;
     clip-path: polygon(0 0, 0 100%, 100% 50%);
 }
 
 .horizontal-line {
     min-width: var(--arrow-length);
-    stroke: var(--secondary-colour);
+    stroke: var(--bs-secondary);
     stroke-width: var(--stroke-width);
 }
 
@@ -29,8 +23,7 @@
 }
 
 @mixin speech-bubble-arrow-top {
-    border: var(--padding) solid transparent;
-    border-width: var(--arrow-size);
+    border: var(--arrow-size) solid transparent;
     content: "";
     margin-left: var(--arrow-size);
     position: absolute;
@@ -41,12 +34,12 @@
 
 .speech-bubble-top:before {
     @include speech-bubble-arrow-top;
-    border-bottom-color: var(--secondary-colour);
-    top: -24px;
+    border-bottom-color: var(--bs-secondary);
+    top: calc(- 2 * var(--arrow-size));
 }
 
 .speech-bubble-top:after {
     @include speech-bubble-arrow-top;
-    border-bottom-color: white;
-    top: -23px;
+    border-bottom-color: var(--bs-white);
+    top: calc(- 2 * var(--arrow-size) + 1px);
 }
