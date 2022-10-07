@@ -1,11 +1,6 @@
 use silkenweb::{
     elements::{
         html::{a, button, div, i, li, ul, DivBuilder, LiBuilder},
-        svg::{
-            attributes::Global,
-            content_type::{Length::Px, Percentage},
-            r#use, svg,
-        },
         AriaElement,
     },
     mount,
