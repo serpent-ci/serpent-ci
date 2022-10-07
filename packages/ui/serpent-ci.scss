@@ -1,7 +1,7 @@
 :root {
     --arrow-size: 12px;
-    --stroke-width: 1px;
-    --arrow-length: 40px;
+    --arrow-stroke-width: 1px;
+    --arrow-min-length: 40px;
 }
 
 .arrow {
@@ -13,9 +13,11 @@
 }
 
 .horizontal-line {
-    min-width: var(--arrow-length);
-    stroke: var(--bs-secondary);
-    stroke-width: var(--stroke-width);
+    border-top: var(--arrow-stroke-width) solid var(--bs-secondary);
+    left: 0;
+    top: 50%;
+    min-width: var(--arrow-min-length);
+    flex: 1;
 }
 
 .speech-bubble-top {

@@ -87,14 +87,7 @@ fn collapsed_function(name: &str, is_last: bool) -> Element {
 }
 
 fn horizontal_line() -> Element {
-    svg()
-        .class([css::HORIZONTAL_LINE])
-        .width(Percentage(100.0))
-        .height(Px(20.0))
-        .view_box("0 0 100 100")
-        .preserve_aspect_ratio("none")
-        .child(r#use().href("#horizontal-line"))
-        .into()
+    div().class([css::HORIZONTAL_LINE]).into()
 }
 
 fn arrow_right() -> Element {
