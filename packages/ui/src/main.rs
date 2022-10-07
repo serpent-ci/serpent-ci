@@ -22,6 +22,12 @@ mod css {
     css_classes!(visibility: pub, path: "serpent-ci.scss");
 }
 
+mod icon {
+    use silkenweb::css_classes;
+
+    css_classes!(visibility: pub, path: "bootstrap-icons.css");
+}
+
 fn dropdown(name: &str) -> Element {
     static ID_COUNTER: AtomicU64 = AtomicU64::new(0);
 
@@ -85,7 +91,7 @@ fn end() -> Element {
 }
 
 fn collapsed_function(name: &str) -> Element {
-    function(name, "bi-zoom-in")
+    function(name, icon::BI_ZOOM_IN)
 }
 
 fn horizontal_line() -> Element {
@@ -109,7 +115,7 @@ fn expanded_function(name: &str, body: impl IntoIterator<Item = Element>) -> Ele
     ])
     .children(body)
     .child(end());
-    let main = function(name, "bi-zoom-out");
+    let main = function(name, icon::BI_ZOOM_OUT);
 
     column([bs::ALIGN_ITEMS_STRETCH])
         .child(main)
