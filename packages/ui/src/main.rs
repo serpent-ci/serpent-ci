@@ -22,6 +22,8 @@ mod icon {
     silkenweb::css_classes!(visibility: pub, path: "bootstrap-icons.css");
 }
 
+const BUTTON_STYLE: &str = bs::BTN_OUTLINE_SECONDARY;
+
 fn dropdown(name: &str) -> Element {
     static ID_COUNTER: AtomicU64 = AtomicU64::new(0);
 
@@ -31,7 +33,7 @@ fn dropdown(name: &str) -> Element {
     button_group()
         .child(
             button()
-                .class([bs::BTN, bs::BTN_SECONDARY, bs::DROPDOWN_TOGGLE])
+                .class([bs::BTN, BUTTON_STYLE, bs::DROPDOWN_TOGGLE])
                 .id(&id)
                 .attribute("data-bs-toggle", "dropdown")
                 .r#type("button")
@@ -69,7 +71,7 @@ fn function(name: &str, icon: &str) -> Element {
         .child(
             button()
                 .r#type("button")
-                .class([bs::BTN, bs::BTN_SECONDARY])
+                .class([bs::BTN, BUTTON_STYLE])
                 .child(i().class([icon])),
         );
 
