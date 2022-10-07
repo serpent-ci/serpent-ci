@@ -11,21 +11,15 @@ use silkenweb::{
 };
 
 mod bs {
-    use silkenweb::css_classes;
-
-    css_classes!(visibility: pub, path: "bootstrap.min.css");
+    silkenweb::css_classes!(visibility: pub, path: "bootstrap.min.css");
 }
 
 mod css {
-    use silkenweb::css_classes;
-
-    css_classes!(visibility: pub, path: "serpent-ci.scss");
+    silkenweb::css_classes!(visibility: pub, path: "serpent-ci.scss");
 }
 
 mod icon {
-    use silkenweb::css_classes;
-
-    css_classes!(visibility: pub, path: "bootstrap-icons.css");
+    silkenweb::css_classes!(visibility: pub, path: "bootstrap-icons.css");
 }
 
 fn dropdown(name: &str) -> Element {
