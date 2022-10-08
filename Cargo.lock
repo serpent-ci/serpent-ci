@@ -805,6 +805,8 @@ dependencies = [
 name = "serpent-ci-ui"
 version = "0.1.0"
 dependencies = [
+ "indoc",
+ "serpent-ci-executor",
  "silkenweb",
 ]
 

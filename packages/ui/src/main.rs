@@ -1,5 +1,10 @@
-use std::sync::atomic::{AtomicU64, Ordering};
+use std::{
+    collections::HashMap,
+    sync::atomic::{AtomicU64, Ordering},
+};
 
+use indoc::indoc;
+use serpent_ci_executor::syntax_tree::{parse, Expression, Function, Statement};
 use silkenweb::{
     elements::{
         html::{a, button, div, i, li, ul, DivBuilder, LiBuilder},
@@ -21,6 +26,21 @@ mod css {
 mod icon {
     silkenweb::css_classes!(visibility: pub, path: "bootstrap-icons.css");
 }
+
+const CODE: &str = indoc! {"
+    def main():
+        function1()
+        function2()
+
+    def function1():
+        function2(function3())
+
+    def function2():
+        pass
+
+    def function3():
+        pass
+"};
 
 const BUTTON_STYLE: &str = bs::BTN_OUTLINE_SECONDARY;
 
@@ -121,25 +141,42 @@ fn expanded_function(name: &str, body: impl IntoIterator<Item = Element>) -> Ele
         .into()
 }
 
+fn render_call(name: &str, _args: &[Expression], library: &HashMap<&str, &Function>) -> Element {
+    render_function(library.get(name).unwrap(), library)
+}
+
+fn render_function(f: &Function, library: &HashMap<&str, &Function>) -> Element {
+    let name = f.name();
+    let body: Vec<Element> = f
+        .body()
+        .iter()
+        .filter_map(|statement| match statement {
+            Statement::Pass => None,
+            Statement::Expression(expr) => render_expression(expr, library),
+        })
+        .collect();
+
+    if body.is_empty() {
+        collapsed_function(name)
+    } else {
+        expanded_function(name, body)
+    }
+}
+
+fn render_expression(expr: &Expression, library: &HashMap<&str, &Function>) -> Option<Element> {
+    match expr {
+        Expression::Variable { .. } => None,
+        Expression::Call { name, args } => Some(render_call(name, args, library)),
+    }
+}
+
 fn main() {
-    mount(
-        "app",
-        row([bs::M_3, bs::ALIGN_ITEMS_START, bs::OVERFLOW_AUTO]).children([
-            expanded_function(
-                "main_function",
-                [
-                    collapsed_function("function1"),
-                    expanded_function(
-                        "another_function",
-                        [
-                            collapsed_function("child_function1"),
-                            collapsed_function("child_function2"),
-                        ],
-                    ),
-                    collapsed_function("function2"),
-                ],
-            ),
-            end(),
-        ]),
-    );
+    let module = parse(CODE).unwrap();
+    let library: HashMap<&str, &Function> =
+        module.functions().iter().map(|f| (f.name(), f)).collect();
+
+    let app = row([bs::M_3, bs::ALIGN_ITEMS_START, bs::OVERFLOW_AUTO])
+        .children([render_function(&module.functions()[0], &library), end()]);
+
+    mount("app", app);
 }

@@ -35,6 +35,10 @@ impl Module {
 
         Ok((input, Module { functions }))
     }
+
+    pub fn functions(&self) -> &[Function] {
+        &self.functions
+    }
 }
 
 #[derive(PartialEq, Eq, Debug)]
@@ -81,6 +85,14 @@ impl Function {
             tuple((eol, blank_lines, tag(*prefix.fragment()))),
             Statement::parse,
         )(input)
+    }
+
+    pub fn name(&self) -> &str {
+        &self.name
+    }
+
+    pub fn body(&self) -> &[Statement] {
+        &self.body
     }
 }
 
