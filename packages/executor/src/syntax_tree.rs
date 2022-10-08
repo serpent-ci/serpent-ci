@@ -1,3 +1,5 @@
+use std::rc::Rc;
+
 use nom::{
     branch::alt,
     bytes::complete::{is_not, tag},
@@ -12,7 +14,10 @@ use nom_greedyerror::{convert_error, GreedyError};
 use nom_locate::LocatedSpan;
 use thiserror::Error;
 
-pub fn parse(input: &str) -> Result<Module, ParseError> {
+pub fn parse<State>(input: &str) -> Result<Module<State>, ParseError>
+where
+    State: 'static + Default,
+{
     match all_consuming(Module::parse)(Span::new(input)).finish() {
         Ok((_, module)) => Ok(module),
         Err(e) => Err(ParseError(convert_error(input, e))),
@@ -24,11 +29,14 @@ type Span<'a> = LocatedSpan<&'a str>;
 type ParseResult<'a, T> = IResult<Span<'a>, T, GreedyError<Span<'a>, ErrorKind>>;
 
 #[derive(PartialEq, Eq, Debug)]
-pub struct Module {
-    functions: Vec<Function>,
+pub struct Module<State> {
+    functions: Vec<Function<State>>,
 }
 
-impl Module {
+impl<State> Module<State>
+where
+    State: 'static + Default,
+{
     fn parse(input: Span) -> ParseResult<Self> {
         let (input, (functions, _)) =
             context("module", many_till(multiline_ws(Function::parse), eof))(input)?;
@@ -36,18 +44,19 @@ impl Module {
         Ok((input, Module { functions }))
     }
 
-    pub fn functions(&self) -> &[Function] {
-        &self.functions
+    pub fn functions(self) -> Vec<Function<State>> {
+        self.functions
     }
 }
 
 #[derive(PartialEq, Eq, Debug)]
-pub struct Function {
+pub struct Function<State> {
+    state: State,
     name: String,
-    body: Vec<Statement>,
+    body: Rc<Vec<Statement>>,
 }
 
-impl Function {
+impl<State: Default> Function<State> {
     fn parse(input: Span) -> ParseResult<Self> {
         let (input, (_def, _, name, _params, _colon, body)) = context(
             "function",
@@ -64,8 +73,9 @@ impl Function {
         Ok((
             input,
             Function {
+                state: State::default(),
                 name: name.fragment().to_string(),
-                body,
+                body: Rc::new(body),
             },
         ))
     }
@@ -91,8 +101,12 @@ impl Function {
         &self.name
     }
 
-    pub fn body(&self) -> &[Statement] {
+    pub fn body(&self) -> &Rc<Vec<Statement>> {
         &self.body
+    }
+
+    pub fn state(&self) -> &State {
+        &self.state
     }
 }
 
@@ -251,6 +265,8 @@ operators!((colon, ":"));
 
 #[cfg(test)]
 mod tests {
+    use std::rc::Rc;
+
     use indoc::indoc;
 
     use super::{parse, Expression, Function, Module, Statement};
@@ -399,8 +415,9 @@ mod tests {
             parse(input).unwrap(),
             Module {
                 functions: vec![Function {
+                    state: (),
                     name: "test".to_owned(),
-                    body: body.into(),
+                    body: Rc::new(body.into()),
                 }],
             }
         );

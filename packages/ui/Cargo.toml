@@ -9,3 +9,4 @@ publish = false
 indoc = "1.0.7"
 silkenweb = { git = "https://github.com/silkenweb/silkenweb" }
 serpent-ci-executor = { path = "../executor" }
+futures-signals = "0.3.31"
