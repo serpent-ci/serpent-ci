@@ -51,12 +51,11 @@ where
 
 #[derive(PartialEq, Eq, Debug)]
 pub struct Function<State> {
-    state: State,
     name: String,
-    body: Rc<Vec<Statement>>,
+    body: Rc<Vec<Statement<State>>>,
 }
 
-impl<State: Default> Function<State> {
+impl<State: 'static + Default> Function<State> {
     fn parse(input: Span) -> ParseResult<Self> {
         let (input, (_def, _, name, _params, _colon, body)) = context(
             "function",
@@ -73,20 +72,19 @@ impl<State: Default> Function<State> {
         Ok((
             input,
             Function {
-                state: State::default(),
                 name: name.fragment().to_string(),
                 body: Rc::new(body),
             },
         ))
     }
 
-    fn inline_body(input: Span) -> ParseResult<Vec<Statement>> {
+    fn inline_body(input: Span) -> ParseResult<Vec<Statement<State>>> {
         let (input, statement) = context("inline body", Statement::parse)(input)?;
 
         Ok((input, vec![statement]))
     }
 
-    fn block_body(input: Span) -> ParseResult<Vec<Statement>> {
+    fn block_body(input: Span) -> ParseResult<Vec<Statement<State>>> {
         let (input, _) = discard(pair(eol, blank_lines))(input)?;
         let (input, prefix) = space0(input)?;
 
@@ -101,12 +99,8 @@ impl<State: Default> Function<State> {
         &self.name
     }
 
-    pub fn body(&self) -> &Rc<Vec<Statement>> {
+    pub fn body(&self) -> &Rc<Vec<Statement<State>>> {
         &self.body
-    }
-
-    pub fn state(&self) -> &State {
-        &self.state
     }
 }
 
@@ -123,13 +117,13 @@ fn eol(input: Span) -> ParseResult<()> {
 }
 
 #[derive(Eq, PartialEq, Debug)]
-pub enum Statement {
+pub enum Statement<State> {
     Pass,
-    Expression(Expression),
+    Expression(Expression<State>),
     // TODO: Loops
 }
 
-impl Statement {
+impl<State: 'static + Default> Statement<State> {
     fn parse(input: Span) -> ParseResult<Self> {
         let (input, stmt) = context(
             "statement",
@@ -144,12 +138,18 @@ impl Statement {
 }
 
 #[derive(PartialEq, Eq, Debug)]
-pub enum Expression {
-    Variable { name: String },
-    Call { name: String, args: Vec<Expression> },
+pub enum Expression<State> {
+    Variable {
+        name: String,
+    },
+    Call {
+        name: String,
+        args: Vec<Expression<State>>,
+        state: State,
+    },
 }
 
-impl Expression {
+impl<State: 'static + Default> Expression<State> {
     fn parse(input: Span) -> ParseResult<Self> {
         alt((Self::call, Self::variable, Self::parenthasized))(input)
     }
@@ -178,6 +178,7 @@ impl Expression {
             input,
             Self::Call {
                 name: name.fragment().to_string(),
+                state: State::default(),
                 args,
             },
         ))
@@ -341,6 +342,7 @@ mod tests {
             Expression::Call {
                 name: "x".to_string(),
                 args: Vec::new(),
+                state: (),
             },
         );
     }
@@ -357,6 +359,7 @@ mod tests {
                 args: vec![Expression::Variable {
                     name: "y".to_string(),
                 }],
+                state: (),
             },
         );
     }
@@ -378,6 +381,7 @@ mod tests {
                         name: "z".to_string(),
                     },
                 ],
+                state: (),
             },
         );
     }
@@ -402,20 +406,20 @@ mod tests {
                         name: "z".to_string(),
                     },
                 ],
+                state: (),
             },
         );
     }
 
-    fn parse_expression(input: &str, expression: Expression) {
+    fn parse_expression(input: &str, expression: Expression<()>) {
         parse_function_body(input, [Statement::Expression(expression)])
     }
 
-    fn parse_function_body<const COUNT: usize>(input: &str, body: [Statement; COUNT]) {
+    fn parse_function_body<const COUNT: usize>(input: &str, body: [Statement<()>; COUNT]) {
         assert_eq!(
             parse(input).unwrap(),
             Module {
                 functions: vec![Function {
-                    state: (),
                     name: "test".to_owned(),
                     body: Rc::new(body.into()),
                 }],

@@ -9,6 +9,7 @@ use futures_signals::signal::{Mutable, SignalExt};
 use indoc::indoc;
 use serpent_ci_executor::syntax_tree::{parse, Expression, Function, Statement};
 use silkenweb::{
+    clone,
     elements::{
         html::{a, button, div, i, li, ul, DivBuilder, LiBuilder},
         AriaElement, ElementEvents,
@@ -105,33 +106,41 @@ fn arrow_right() -> Element {
 
 fn render_call(
     name: &str,
-    args: &[Expression],
+    args: &[Expression<State>],
+    expanded: &State,
     library: &Rc<HashMap<String, Function<State>>>,
 ) -> Vec<Element> {
     args.iter()
         .flat_map(|arg| render_expression(arg, library))
         .chain(iter::once(render_function(
             library.get(name).unwrap(),
+            expanded,
             library,
         )))
         .collect()
 }
 
-fn render_function(f: &Function<State>, library: &Rc<HashMap<String, Function<State>>>) -> Element {
+fn render_function(
+    f: &Function<State>,
+    expanded: &State,
+    library: &Rc<HashMap<String, Function<State>>>,
+) -> Element {
     // TODO: Icon
     let name = f.name();
-    let expanded = f.state().clone();
     let function = button_group([bs::SHADOW])
         .aria_label(format!("Function {name}"))
         .child(dropdown(name, []))
         .child(
             button()
-                .on_click(move |_, _| {
-                    expanded.replace_with(|e| !*e);
+                .on_click({
+                    clone!(expanded);
+                    move |_, _| {
+                        expanded.replace_with(|e| !*e);
+                    }
                 })
                 .r#type("button")
                 .class([bs::BTN, BUTTON_STYLE])
-                .child(i().class_signal(f.state().signal().map(|expanded| {
+                .child(i().class_signal(expanded.signal().map(|expanded| {
                     [if expanded {
                         icon::BI_ZOOM_OUT
                     } else {
@@ -149,7 +158,7 @@ fn render_function(f: &Function<State>, library: &Rc<HashMap<String, Function<St
 
     column([bs::ALIGN_ITEMS_STRETCH])
         .child(main)
-        .optional_child_signal(f.state().signal().map(move |expanded| {
+        .optional_child_signal(expanded.signal().map(move |expanded| {
             expanded.then(|| {
                 row([
                     // TODO: We can probably get rid of some `row`s and `column`s using
@@ -176,12 +185,12 @@ fn render_function(f: &Function<State>, library: &Rc<HashMap<String, Function<St
 }
 
 fn render_expression(
-    expr: &Expression,
+    expr: &Expression<State>,
     library: &Rc<HashMap<String, Function<State>>>,
 ) -> Vec<Element> {
     match expr {
         Expression::Variable { .. } => Vec::new(),
-        Expression::Call { name, args } => render_call(name, args, library),
+        Expression::Call { name, args, state } => render_call(name, args, state, library),
     }
 }
 
@@ -197,8 +206,10 @@ fn main() {
             .collect(),
     );
 
-    let app = row([bs::M_3, bs::ALIGN_ITEMS_START, bs::OVERFLOW_AUTO])
-        .children([render_function(&library["main"], &library), end()]);
+    let app = row([bs::M_3, bs::ALIGN_ITEMS_START, bs::OVERFLOW_AUTO]).children([
+        render_function(&library["main"], &State::new(false), &library),
+        end(),
+    ]);
 
     mount("app", app);
 }
