@@ -119,7 +119,49 @@ fn render_call(
 fn render_function(f: &Function, library: &Rc<HashMap<String, Function>>) -> Element {
     let expanded = Mutable::new(false);
     let name = f.name();
-    let function = button_group([bs::SHADOW])
+    let main = row([bs::ALIGN_ITEMS_CENTER])
+        .child(render_function_header(name, expanded.clone()))
+        .child(horizontal_line())
+        .child(arrow_right());
+
+    let library = library.clone();
+    let body = f.body().clone();
+
+    column([bs::ALIGN_ITEMS_STRETCH])
+        .child(main)
+        .optional_child_signal(
+            expanded
+                .signal()
+                .map(move |expanded| expanded.then(|| render_function_body(body.iter(), &library))),
+        )
+        .into()
+}
+
+fn render_function_body<'a>(
+    body: impl Iterator<Item = &'a Statement>,
+    library: &Rc<HashMap<String, Function>>,
+) -> DivBuilder {
+    row([
+        bs::ALIGN_SELF_START,
+        bs::ALIGN_ITEMS_START,
+        css::SPEECH_BUBBLE_TOP,
+        bs::MT_3,
+        bs::ME_3,
+        bs::P_3,
+        bs::BORDER,
+        bs::BORDER_SECONDARY,
+        bs::ROUNDED,
+        bs::SHADOW,
+    ])
+    .children(body.flat_map(|statement| match statement {
+        Statement::Pass => Vec::new(),
+        Statement::Expression(expr) => render_expression(expr, library),
+    }))
+    .child(end())
+}
+
+fn render_function_header(name: &str, expanded: Mutable<bool>) -> DivBuilder {
+    button_group([bs::SHADOW])
         .aria_label(format!("Function {name}"))
         .child(dropdown(name, []))
         .child(
@@ -139,39 +181,7 @@ fn render_function(f: &Function, library: &Rc<HashMap<String, Function>>) -> Ele
                         icon::BI_ZOOM_IN
                     }]
                 }))),
-        );
-    let main = row([bs::ALIGN_ITEMS_CENTER])
-        .child(function)
-        .child(horizontal_line())
-        .child(arrow_right());
-
-    let library = library.clone();
-    let body = f.body().clone();
-
-    column([bs::ALIGN_ITEMS_STRETCH])
-        .child(main)
-        .optional_child_signal(expanded.signal().map(move |expanded| {
-            expanded.then(|| {
-                row([
-                    bs::ALIGN_SELF_START,
-                    bs::ALIGN_ITEMS_START,
-                    css::SPEECH_BUBBLE_TOP,
-                    bs::MT_3,
-                    bs::ME_3,
-                    bs::P_3,
-                    bs::BORDER,
-                    bs::BORDER_SECONDARY,
-                    bs::ROUNDED,
-                    bs::SHADOW,
-                ])
-                .children(body.iter().flat_map(|statement| match statement {
-                    Statement::Pass => Vec::new(),
-                    Statement::Expression(expr) => render_expression(expr, &library),
-                }))
-                .child(end())
-            })
-        }))
-        .into()
+        )
 }
 
 fn render_expression(expr: &Expression, library: &Rc<HashMap<String, Function>>) -> Vec<Element> {
