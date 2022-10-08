@@ -125,6 +125,7 @@ fn render_function(
     expanded: &State,
     library: &Rc<HashMap<String, Function<State>>>,
 ) -> Element {
+    // TODO: Recursive function will cause a stack overflow when expanded
     let name = f.name();
     let function = button_group([bs::SHADOW])
         .aria_label(format!("Function {name}"))
