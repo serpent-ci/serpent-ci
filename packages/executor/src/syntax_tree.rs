@@ -14,10 +14,7 @@ use nom_greedyerror::{convert_error, GreedyError};
 use nom_locate::LocatedSpan;
 use thiserror::Error;
 
-pub fn parse<State>(input: &str) -> Result<Module<State>, ParseError>
-where
-    State: 'static + Default,
-{
+pub fn parse(input: &str) -> Result<Module, ParseError> {
     match all_consuming(Module::parse)(Span::new(input)).finish() {
         Ok((_, module)) => Ok(module),
         Err(e) => Err(ParseError(convert_error(input, e))),
@@ -29,14 +26,11 @@ type Span<'a> = LocatedSpan<&'a str>;
 type ParseResult<'a, T> = IResult<Span<'a>, T, GreedyError<Span<'a>, ErrorKind>>;
 
 #[derive(PartialEq, Eq, Debug)]
-pub struct Module<State> {
-    functions: Vec<Function<State>>,
+pub struct Module {
+    functions: Vec<Function>,
 }
 
-impl<State> Module<State>
-where
-    State: 'static + Default,
-{
+impl Module {
     fn parse(input: Span) -> ParseResult<Self> {
         let (input, (functions, _)) =
             context("module", many_till(multiline_ws(Function::parse), eof))(input)?;
@@ -44,18 +38,18 @@ where
         Ok((input, Module { functions }))
     }
 
-    pub fn functions(self) -> Vec<Function<State>> {
+    pub fn functions(self) -> Vec<Function> {
         self.functions
     }
 }
 
 #[derive(PartialEq, Eq, Debug)]
-pub struct Function<State> {
+pub struct Function {
     name: String,
-    body: Rc<Vec<Statement<State>>>,
+    body: Rc<Vec<Statement>>,
 }
 
-impl<State: 'static + Default> Function<State> {
+impl Function {
     fn parse(input: Span) -> ParseResult<Self> {
         let (input, (_def, _, name, _params, _colon, body)) = context(
             "function",
@@ -78,13 +72,13 @@ impl<State: 'static + Default> Function<State> {
         ))
     }
 
-    fn inline_body(input: Span) -> ParseResult<Vec<Statement<State>>> {
+    fn inline_body(input: Span) -> ParseResult<Vec<Statement>> {
         let (input, statement) = context("inline body", Statement::parse)(input)?;
 
         Ok((input, vec![statement]))
     }
 
-    fn block_body(input: Span) -> ParseResult<Vec<Statement<State>>> {
+    fn block_body(input: Span) -> ParseResult<Vec<Statement>> {
         let (input, _) = discard(pair(eol, blank_lines))(input)?;
         let (input, prefix) = space0(input)?;
 
@@ -99,7 +93,7 @@ impl<State: 'static + Default> Function<State> {
         &self.name
     }
 
-    pub fn body(&self) -> &Rc<Vec<Statement<State>>> {
+    pub fn body(&self) -> &Rc<Vec<Statement>> {
         &self.body
     }
 }
@@ -117,13 +111,13 @@ fn eol(input: Span) -> ParseResult<()> {
 }
 
 #[derive(Eq, PartialEq, Debug)]
-pub enum Statement<State> {
+pub enum Statement {
     Pass,
-    Expression(Expression<State>),
+    Expression(Expression),
     // TODO: Loops
 }
 
-impl<State: 'static + Default> Statement<State> {
+impl Statement {
     fn parse(input: Span) -> ParseResult<Self> {
         let (input, stmt) = context(
             "statement",
@@ -138,18 +132,12 @@ impl<State: 'static + Default> Statement<State> {
 }
 
 #[derive(PartialEq, Eq, Debug)]
-pub enum Expression<State> {
-    Variable {
-        name: String,
-    },
-    Call {
-        name: String,
-        args: Vec<Expression<State>>,
-        state: State,
-    },
+pub enum Expression {
+    Variable { name: String },
+    Call { name: String, args: Vec<Expression> },
 }
 
-impl<State: 'static + Default> Expression<State> {
+impl Expression {
     fn parse(input: Span) -> ParseResult<Self> {
         alt((Self::call, Self::variable, Self::parenthasized))(input)
     }
@@ -178,7 +166,6 @@ impl<State: 'static + Default> Expression<State> {
             input,
             Self::Call {
                 name: name.fragment().to_string(),
-                state: State::default(),
                 args,
             },
         ))
@@ -342,7 +329,6 @@ mod tests {
             Expression::Call {
                 name: "x".to_string(),
                 args: Vec::new(),
-                state: (),
             },
         );
     }
@@ -359,7 +345,6 @@ mod tests {
                 args: vec![Expression::Variable {
                     name: "y".to_string(),
                 }],
-                state: (),
             },
         );
     }
@@ -381,7 +366,6 @@ mod tests {
                         name: "z".to_string(),
                     },
                 ],
-                state: (),
             },
         );
     }
@@ -406,16 +390,15 @@ mod tests {
                         name: "z".to_string(),
                     },
                 ],
-                state: (),
             },
         );
     }
 
-    fn parse_expression(input: &str, expression: Expression<()>) {
+    fn parse_expression(input: &str, expression: Expression) {
         parse_function_body(input, [Statement::Expression(expression)])
     }
 
-    fn parse_function_body<const COUNT: usize>(input: &str, body: [Statement<()>; COUNT]) {
+    fn parse_function_body<const COUNT: usize>(input: &str, body: [Statement; COUNT]) {
         assert_eq!(
             parse(input).unwrap(),
             Module {

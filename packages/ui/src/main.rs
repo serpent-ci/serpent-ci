@@ -48,8 +48,6 @@ const CODE: &str = indoc! {"
 
 const BUTTON_STYLE: &str = bs::BTN_OUTLINE_SECONDARY;
 
-type State = Mutable<bool>;
-
 fn dropdown<'a>(name: &'a str, classes: impl IntoIterator<Item = &'a str>) -> Element {
     static ID_COUNTER: AtomicU64 = AtomicU64::new(0);
 
@@ -106,26 +104,20 @@ fn arrow_right() -> Element {
 
 fn render_call(
     name: &str,
-    args: &[Expression<State>],
-    expanded: &State,
-    library: &Rc<HashMap<String, Function<State>>>,
+    args: &[Expression],
+    library: &Rc<HashMap<String, Function>>,
 ) -> Vec<Element> {
     args.iter()
         .flat_map(|arg| render_expression(arg, library))
         .chain(iter::once(render_function(
             library.get(name).unwrap(),
-            expanded,
             library,
         )))
         .collect()
 }
 
-fn render_function(
-    f: &Function<State>,
-    expanded: &State,
-    library: &Rc<HashMap<String, Function<State>>>,
-) -> Element {
-    // TODO: Recursive function will cause a stack overflow when expanded
+fn render_function(f: &Function, library: &Rc<HashMap<String, Function>>) -> Element {
+    let expanded = Mutable::new(false);
     let name = f.name();
     let function = button_group([bs::SHADOW])
         .aria_label(format!("Function {name}"))
@@ -161,8 +153,6 @@ fn render_function(
         .optional_child_signal(expanded.signal().map(move |expanded| {
             expanded.then(|| {
                 row([
-                    // TODO: We can probably get rid of some `row`s and `column`s using
-                    // align_self_*
                     bs::ALIGN_SELF_START,
                     css::SPEECH_BUBBLE_TOP,
                     bs::ALIGN_ITEMS_START,
@@ -184,19 +174,16 @@ fn render_function(
         .into()
 }
 
-fn render_expression(
-    expr: &Expression<State>,
-    library: &Rc<HashMap<String, Function<State>>>,
-) -> Vec<Element> {
+fn render_expression(expr: &Expression, library: &Rc<HashMap<String, Function>>) -> Vec<Element> {
     match expr {
         Expression::Variable { .. } => Vec::new(),
-        Expression::Call { name, args, state } => render_call(name, args, state, library),
+        Expression::Call { name, args } => render_call(name, args, library),
     }
 }
 
 fn main() {
     let module = parse(CODE).unwrap();
-    let library: Rc<HashMap<String, Function<State>>> = Rc::new(
+    let library: Rc<HashMap<String, Function>> = Rc::new(
         module
             .functions()
             .into_iter()
@@ -204,10 +191,8 @@ fn main() {
             .collect(),
     );
 
-    let app = row([bs::M_3, bs::ALIGN_ITEMS_START, bs::OVERFLOW_AUTO]).children([
-        render_function(&library["main"], &State::new(false), &library),
-        end(),
-    ]);
+    let app = row([bs::M_3, bs::ALIGN_ITEMS_START, bs::OVERFLOW_AUTO])
+        .children([render_function(&library["main"], &library), end()]);
 
     mount("app", app);
 }
