@@ -241,7 +241,7 @@ operators!((colon, ":"));
 mod tests {
     use indoc::indoc;
 
-    use crate::{parse, Expression, Function, Module, Statement};
+    use super::{parse, Expression, Function, Module, Statement};
 
     #[test]
     fn empty_fn() {
