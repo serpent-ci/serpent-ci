@@ -154,15 +154,15 @@ fn render_function(f: &Function, library: &Rc<HashMap<String, Function>>) -> Ele
             expanded.then(|| {
                 row([
                     bs::ALIGN_SELF_START,
-                    css::SPEECH_BUBBLE_TOP,
                     bs::ALIGN_ITEMS_START,
-                    bs::SHADOW,
+                    css::SPEECH_BUBBLE_TOP,
                     bs::MT_3,
+                    bs::ME_3,
                     bs::P_3,
                     bs::BORDER,
                     bs::BORDER_SECONDARY,
                     bs::ROUNDED,
-                    bs::ME_3,
+                    bs::SHADOW,
                 ])
                 .children(body.iter().flat_map(|statement| match statement {
                     Statement::Pass => Vec::new(),
