@@ -125,7 +125,6 @@ fn render_function(
     expanded: &State,
     library: &Rc<HashMap<String, Function<State>>>,
 ) -> Element {
-    // TODO: Icon
     let name = f.name();
     let function = button_group([bs::SHADOW])
         .aria_label(format!("Function {name}"))
@@ -195,8 +194,6 @@ fn render_expression(
 }
 
 fn main() {
-    // TODO: We shouldn't put `state` on the funtion. It belongs on an instance of
-    // the function reference.
     let module = parse(CODE).unwrap();
     let library: Rc<HashMap<String, Function<State>>> = Rc::new(
         module
