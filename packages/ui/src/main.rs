@@ -1,5 +1,6 @@
 use std::{
     collections::HashMap,
+    iter,
     sync::atomic::{AtomicU64, Ordering},
 };
 
@@ -141,17 +142,27 @@ fn expanded_function(name: &str, body: impl IntoIterator<Item = Element>) -> Ele
         .into()
 }
 
-fn render_call(name: &str, _args: &[Expression], library: &HashMap<&str, &Function>) -> Element {
-    render_function(library.get(name).unwrap(), library)
+fn render_call(
+    name: &str,
+    args: &[Expression],
+    library: &HashMap<&str, &Function>,
+) -> Vec<Element> {
+    args.iter()
+        .flat_map(|arg| render_expression(arg, library))
+        .chain(iter::once(render_function(
+            library.get(name).unwrap(),
+            library,
+        )))
+        .collect()
 }
 
 fn render_function(f: &Function, library: &HashMap<&str, &Function>) -> Element {
     let name = f.name();
-    let body: Vec<Element> = f
+    let body: Vec<_> = f
         .body()
         .iter()
-        .filter_map(|statement| match statement {
-            Statement::Pass => None,
+        .flat_map(|statement| match statement {
+            Statement::Pass => Vec::new(),
             Statement::Expression(expr) => render_expression(expr, library),
         })
         .collect();
@@ -163,10 +174,10 @@ fn render_function(f: &Function, library: &HashMap<&str, &Function>) -> Element 
     }
 }
 
-fn render_expression(expr: &Expression, library: &HashMap<&str, &Function>) -> Option<Element> {
+fn render_expression(expr: &Expression, library: &HashMap<&str, &Function>) -> Vec<Element> {
     match expr {
-        Expression::Variable { .. } => None,
-        Expression::Call { name, args } => Some(render_call(name, args, library)),
+        Expression::Variable { .. } => Vec::new(),
+        Expression::Call { name, args } => render_call(name, args, library),
     }
 }
 
