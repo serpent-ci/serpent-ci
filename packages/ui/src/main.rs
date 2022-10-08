@@ -24,13 +24,13 @@ mod icon {
 
 const BUTTON_STYLE: &str = bs::BTN_OUTLINE_SECONDARY;
 
-fn dropdown(name: &str) -> Element {
+fn dropdown<'a>(name: &'a str, classes: impl IntoIterator<Item = &'a str>) -> Element {
     static ID_COUNTER: AtomicU64 = AtomicU64::new(0);
 
     let id = ID_COUNTER.fetch_add(1, Ordering::SeqCst);
     let id = format!("dropdown-{id}");
 
-    button_group()
+    button_group(classes)
         .child(
             button()
                 .class([bs::BTN, BUTTON_STYLE, bs::DROPDOWN_TOGGLE])
@@ -48,8 +48,10 @@ fn dropdown(name: &str) -> Element {
         .into()
 }
 
-fn button_group() -> DivBuilder {
-    div().class([bs::BTN_GROUP]).role("group")
+fn button_group<'a>(classes: impl IntoIterator<Item = &'a str>) -> DivBuilder {
+    div()
+        .class(classes.into_iter().chain([bs::BTN_GROUP]))
+        .role("group")
 }
 
 fn dropdown_item(name: &str) -> LiBuilder {
@@ -65,9 +67,9 @@ fn column<'a>(classes: impl IntoIterator<Item = &'a str>) -> DivBuilder {
 }
 
 fn function(name: &str, icon: &str) -> Element {
-    let function = button_group()
+    let function = button_group([bs::SHADOW])
         .aria_label(format!("Function {name}"))
-        .child(dropdown(name))
+        .child(dropdown(name, []))
         .child(
             button()
                 .r#type("button")
@@ -83,7 +85,7 @@ fn function(name: &str, icon: &str) -> Element {
 }
 
 fn end() -> Element {
-    dropdown("end")
+    dropdown("end", [bs::SHADOW])
 }
 
 fn collapsed_function(name: &str) -> Element {
