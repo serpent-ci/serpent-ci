@@ -1,4 +1,4 @@
-use std::rc::Rc;
+use std::{collections::HashMap, rc::Rc};
 
 use nom::{
     branch::alt,
@@ -27,7 +27,7 @@ type ParseResult<'a, T> = IResult<Span<'a>, T, GreedyError<Span<'a>, ErrorKind>>
 
 #[derive(PartialEq, Eq, Debug)]
 pub struct Module {
-    functions: Vec<Function>,
+    functions: Vec<Function<String>>,
 }
 
 impl Module {
@@ -38,18 +38,18 @@ impl Module {
         Ok((input, Module { functions }))
     }
 
-    pub fn functions(self) -> Vec<Function> {
-        self.functions
+    pub fn functions(&self) -> &[Function<String>] {
+        &self.functions
     }
 }
 
 #[derive(PartialEq, Eq, Debug)]
-pub struct Function {
+pub struct Function<Id> {
     name: String,
-    body: Rc<Vec<Statement>>,
+    body: Rc<Vec<Statement<Id>>>,
 }
 
-impl Function {
+impl Function<String> {
     fn parse(input: Span) -> ParseResult<Self> {
         let (input, (_def, _, name, _params, _colon, body)) = context(
             "function",
@@ -72,13 +72,13 @@ impl Function {
         ))
     }
 
-    fn inline_body(input: Span) -> ParseResult<Vec<Statement>> {
+    fn inline_body(input: Span) -> ParseResult<Vec<Statement<String>>> {
         let (input, statement) = context("inline body", Statement::parse)(input)?;
 
         Ok((input, vec![statement]))
     }
 
-    fn block_body(input: Span) -> ParseResult<Vec<Statement>> {
+    fn block_body(input: Span) -> ParseResult<Vec<Statement<String>>> {
         let (input, _) = discard(pair(eol, blank_lines))(input)?;
         let (input, prefix) = space0(input)?;
 
@@ -89,14 +89,30 @@ impl Function {
         )(input)
     }
 
-    pub fn name(&self) -> &str {
+    pub fn translate_ids<Id: Clone>(&self, id_map: &IdMap<Id>) -> Function<Id> {
+        Function {
+            name: self.name.clone(),
+            body: Rc::new(
+                self.body
+                    .iter()
+                    .map(|statement| statement.translate_ids(id_map))
+                    .collect(),
+            ),
+        }
+    }
+}
+
+impl<Id> Function<Id> {
+    pub fn name(&self) -> &str  {
         &self.name
     }
 
-    pub fn body(&self) -> &Rc<Vec<Statement>> {
+    pub fn body(&self) -> &Rc<Vec<Statement<Id>>> {
         &self.body
     }
 }
+
+pub type IdMap<Id> = HashMap<String, Id>;
 
 fn blank_lines(input: Span) -> ParseResult<()> {
     discard(many0(pair(space0, eol)))(input)
@@ -111,13 +127,13 @@ fn eol(input: Span) -> ParseResult<()> {
 }
 
 #[derive(Eq, PartialEq, Debug)]
-pub enum Statement {
+pub enum Statement<FnId> {
     Pass,
-    Expression(Expression),
+    Expression(Expression<FnId>),
     // TODO: Loops
 }
 
-impl Statement {
+impl Statement<String> {
     fn parse(input: Span) -> ParseResult<Self> {
         let (input, stmt) = context(
             "statement",
@@ -129,15 +145,27 @@ impl Statement {
 
         Ok((input, stmt))
     }
+
+    fn translate_ids<Id: Clone>(&self, id_map: &IdMap<Id>) -> Statement<Id> {
+        match self {
+            Self::Pass => Statement::Pass,
+            Self::Expression(expression) => Statement::Expression(expression.translate_ids(id_map)),
+        }
+    }
 }
 
 #[derive(PartialEq, Eq, Debug)]
-pub enum Expression {
-    Variable { name: String },
-    Call { name: String, args: Vec<Expression> },
+pub enum Expression<FnId> {
+    Variable {
+        name: String,
+    },
+    Call {
+        name: FnId,
+        args: Vec<Expression<FnId>>,
+    },
 }
 
-impl Expression {
+impl Expression<String> {
     fn parse(input: Span) -> ParseResult<Self> {
         alt((Self::call, Self::variable, Self::parenthasized))(input)
     }
@@ -176,6 +204,16 @@ impl Expression {
             "parenthesized",
             delimited(tag("("), multiline_ws(Expression::parse), tag(")")),
         )(input)
+    }
+
+    fn translate_ids<Id: Clone>(&self, id_map: &IdMap<Id>) -> Expression<Id> {
+        match self {
+            Self::Variable { name } => Expression::Variable { name: name.clone() },
+            Self::Call { name, args } => Expression::Call {
+                name: id_map.get(name).unwrap().clone(),
+                args: args.iter().map(|arg| arg.translate_ids(id_map)).collect(),
+            },
+        }
     }
 }
 
@@ -394,11 +432,11 @@ mod tests {
         );
     }
 
-    fn parse_expression(input: &str, expression: Expression) {
+    fn parse_expression(input: &str, expression: Expression<String>) {
         parse_function_body(input, [Statement::Expression(expression)])
     }
 
-    fn parse_function_body<const COUNT: usize>(input: &str, body: [Statement; COUNT]) {
+    fn parse_function_body<const COUNT: usize>(input: &str, body: [Statement<String>; COUNT]) {
         assert_eq!(
             parse(input).unwrap(),
             Module {

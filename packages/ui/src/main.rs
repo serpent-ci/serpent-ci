@@ -1,5 +1,4 @@
 use std::{
-    collections::HashMap,
     iter,
     rc::Rc,
     sync::atomic::{AtomicU64, Ordering},
@@ -7,7 +6,10 @@ use std::{
 
 use futures_signals::signal::{Mutable, SignalExt};
 use indoc::indoc;
-use serpent_ci_executor::syntax_tree::{parse, Expression, Function, Statement};
+use serpent_ci_executor::{
+    library::{FunctionId, Library},
+    syntax_tree::{parse, Expression, Function, Statement},
+};
 use silkenweb::{
     clone,
     elements::{
@@ -103,20 +105,17 @@ fn arrow_right() -> Element {
 }
 
 fn render_call(
-    name: &str,
-    args: &[Expression],
-    library: &Rc<HashMap<String, Function>>,
+    name: FunctionId,
+    args: &[Expression<FunctionId>],
+    library: &Rc<Library>,
 ) -> Vec<Element> {
     args.iter()
         .flat_map(|arg| render_expression(arg, library))
-        .chain(iter::once(render_function(
-            library.get(name).unwrap(),
-            library,
-        )))
+        .chain(iter::once(render_function(library.lookup(name), library)))
         .collect()
 }
 
-fn render_function(f: &Function, library: &Rc<HashMap<String, Function>>) -> Element {
+fn render_function(f: &Function<FunctionId>, library: &Rc<Library>) -> Element {
     let expanded = Mutable::new(false);
     let name = f.name();
     let main = row([bs::ALIGN_ITEMS_CENTER])
@@ -138,8 +137,8 @@ fn render_function(f: &Function, library: &Rc<HashMap<String, Function>>) -> Ele
 }
 
 fn render_function_body<'a>(
-    body: impl Iterator<Item = &'a Statement>,
-    library: &Rc<HashMap<String, Function>>,
+    body: impl Iterator<Item = &'a Statement<FunctionId>>,
+    library: &Rc<Library>,
 ) -> DivBuilder {
     row([
         bs::ALIGN_SELF_START,
@@ -184,25 +183,19 @@ fn render_function_header(name: &str, expanded: Mutable<bool>) -> DivBuilder {
         )
 }
 
-fn render_expression(expr: &Expression, library: &Rc<HashMap<String, Function>>) -> Vec<Element> {
+fn render_expression(expr: &Expression<FunctionId>, library: &Rc<Library>) -> Vec<Element> {
     match expr {
         Expression::Variable { .. } => Vec::new(),
-        Expression::Call { name, args } => render_call(name, args, library),
+        Expression::Call { name, args } => render_call(*name, args, library),
     }
 }
 
 fn main() {
     let module = parse(CODE).unwrap();
-    let library: Rc<HashMap<String, Function>> = Rc::new(
-        module
-            .functions()
-            .into_iter()
-            .map(|f| (f.name().to_owned(), f))
-            .collect(),
-    );
+    let library = Rc::new(Library::link(module));
 
     let app = row([bs::M_3, bs::ALIGN_ITEMS_START, bs::OVERFLOW_AUTO])
-        .children([render_function(&library["main"], &library), end()]);
+        .children([render_function(library.main().unwrap(), &library), end()]);
 
     mount("app", app);
 }
