@@ -1230,7 +1230,6 @@ dependencies = [
  "futures-signals",
  "gloo-console",
  "gloo-net",
- "indoc",
  "itertools",
  "serpent-ci-executor",
  "silkenweb",

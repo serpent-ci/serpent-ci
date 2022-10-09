@@ -8,11 +8,11 @@ use futures::StreamExt;
 use futures_signals::signal::{Mutable, SignalExt};
 use gloo_console::log;
 use gloo_net::websocket::futures::WebSocket;
-use indoc::indoc;
 use itertools::chain;
 use serpent_ci_executor::{
     library::{FunctionId, Library},
     syntax_tree::{parse, Expression, Function, Statement},
+    CODE,
 };
 use silkenweb::{
     clone,
@@ -36,21 +36,6 @@ mod css {
 mod icon {
     silkenweb::css_classes!(visibility: pub, path: "bootstrap-icons.css");
 }
-
-const CODE: &str = indoc! {"
-    def main():
-        function1()
-        function2()
-
-    def function1():
-        function2(function3())
-
-    def function2():
-        pass
-
-    def function3():
-        pass
-"};
 
 const BUTTON_STYLE: &str = bs::BTN_OUTLINE_SECONDARY;
 
@@ -202,7 +187,7 @@ fn main() {
         while let Some(msg) = ws.next().await {
             log!(format!("Received: {:?}", msg))
         }
-        
+
         log!("WebSocket Closed")
     };
 
