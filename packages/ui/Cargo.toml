@@ -11,3 +11,6 @@ silkenweb = { git = "https://github.com/silkenweb/silkenweb" }
 serpent-ci-executor = { path = "../executor" }
 futures-signals = "0.3.31"
 itertools = "0.10.5"
+gloo-net = "0.2.4"
+futures = "0.3.24"
+gloo-console = "0.2.3"

@@ -4,7 +4,10 @@ use std::{
     sync::atomic::{AtomicU64, Ordering},
 };
 
+use futures::StreamExt;
 use futures_signals::signal::{Mutable, SignalExt};
+use gloo_console::log;
+use gloo_net::websocket::futures::WebSocket;
 use indoc::indoc;
 use itertools::chain;
 use serpent_ci_executor::{
@@ -194,9 +197,18 @@ fn render_expression(expr: &Expression<FunctionId>, library: &Rc<Library>) -> Ve
 fn main() {
     let module = parse(CODE).unwrap();
     let library = Rc::new(Library::link(module));
+    let mut ws = WebSocket::open("ws://127.0.0.1:9090/").unwrap();
+    let ws_handler = async move {
+        while let Some(msg) = ws.next().await {
+            log!(format!("Received: {:?}", msg))
+        }
+        
+        log!("WebSocket Closed")
+    };
 
     let app = row([bs::M_3, bs::ALIGN_ITEMS_START, bs::OVERFLOW_AUTO])
-        .children([render_function(library.main().unwrap(), &library), end()]);
+        .children([render_function(library.main().unwrap(), &library), end()])
+        .spawn_future(ws_handler);
 
     mount("app", app);
 }
