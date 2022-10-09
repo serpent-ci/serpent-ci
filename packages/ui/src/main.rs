@@ -140,18 +140,17 @@ fn render_function_body<'a>(
     body: impl Iterator<Item = &'a Statement<FunctionId>>,
     library: &Rc<Library>,
 ) -> DivBuilder {
+    let body_border = [bs::BORDER, bs::BORDER_SECONDARY, bs::ROUNDED, bs::SHADOW];
+    let body_box = [bs::MT_3, bs::ME_3, bs::P_3];
+
     row([
         bs::ALIGN_SELF_START,
         bs::ALIGN_ITEMS_START,
         css::SPEECH_BUBBLE_TOP,
-        bs::MT_3,
-        bs::ME_3,
-        bs::P_3,
-        bs::BORDER,
-        bs::BORDER_SECONDARY,
-        bs::ROUNDED,
-        bs::SHADOW,
-    ])
+    ]
+    .into_iter()
+    .chain(body_border)
+    .chain(body_box))
     .children(body.flat_map(|statement| match statement {
         Statement::Pass => Vec::new(),
         Statement::Expression(expr) => render_expression(expr, library),
