@@ -103,7 +103,7 @@ impl Function<String> {
 }
 
 impl<Id> Function<Id> {
-    pub fn name(&self) -> &str  {
+    pub fn name(&self) -> &str {
         &self.name
     }
 
