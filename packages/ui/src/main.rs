@@ -11,13 +11,14 @@ use gloo_net::websocket::futures::WebSocket;
 use itertools::chain;
 use serpent_ci_executor::{
     library::{FunctionId, Library},
+    run::FnStatus,
     syntax_tree::{parse, Expression, Function, Statement},
     CODE,
 };
 use silkenweb::{
     clone,
     elements::{
-        html::{a, button, div, i, li, ul, DivBuilder, LiBuilder},
+        html::{a, button, div, i, li, span, ul, DivBuilder, LiBuilder},
         AriaElement, ElementEvents,
     },
     mount,
@@ -39,22 +40,42 @@ mod icon {
 
 const BUTTON_STYLE: &str = bs::BTN_OUTLINE_SECONDARY;
 
-fn dropdown<'a>(name: &'a str, classes: impl IntoIterator<Item = &'a str>) -> Element {
+fn dropdown<'a>(
+    name: &'a str,
+    fn_status: FnStatus,
+    classes: impl IntoIterator<Item = &'a str>,
+) -> Element {
     static ID_COUNTER: AtomicU64 = AtomicU64::new(0);
 
     let id = ID_COUNTER.fetch_add(1, Ordering::SeqCst);
     let id = format!("dropdown-{id}");
 
+    let mut main_button = button()
+        .class([bs::BTN, BUTTON_STYLE, bs::DROPDOWN_TOGGLE])
+        .id(&id)
+        .attribute("data-bs-toggle", "dropdown")
+        .r#type("button")
+        .aria_expanded("false");
+
+    main_button = match fn_status {
+        FnStatus::NotRun => main_button,
+        FnStatus::Running => main_button
+            .child(
+                span()
+                    .class([bs::SPINNER_BORDER, bs::SPINNER_BORDER_SM, bs::TEXT_PRIMARY])
+                    .aria_hidden("true"),
+            )
+            .text(" "),
+        FnStatus::Ok => main_button
+            .child(i().class([bs::TEXT_SUCCESS, icon::BI_CHECK_CIRCLE_FILL]))
+            .text(" "),
+        FnStatus::Error => main_button
+            .child(i().class([bs::TEXT_DANGER, icon::BI_EXCLAMATION_TRIANGLE_FILL]))
+            .text(" "),
+    };
+
     button_group(classes)
-        .child(
-            button()
-                .class([bs::BTN, BUTTON_STYLE, bs::DROPDOWN_TOGGLE])
-                .id(&id)
-                .attribute("data-bs-toggle", "dropdown")
-                .r#type("button")
-                .aria_expanded("false")
-                .text(name),
-        )
+        .child(main_button.text(name))
         .child(
             ul().class([bs::DROPDOWN_MENU])
                 .aria_labelledby(id)
@@ -82,7 +103,7 @@ fn column<'a>(classes: impl IntoIterator<Item = &'a str>) -> DivBuilder {
 }
 
 fn end() -> Element {
-    dropdown("end", [bs::SHADOW])
+    dropdown("end", FnStatus::Ok, [bs::SHADOW])
 }
 
 fn horizontal_line() -> Element {
@@ -151,7 +172,7 @@ fn render_function_body<'a>(
 fn render_function_header(name: &str, expanded: Mutable<bool>) -> DivBuilder {
     button_group([bs::SHADOW])
         .aria_label(format!("Function {name}"))
-        .child(dropdown(name, []))
+        .child(dropdown(name, FnStatus::Ok, []))
         .child(
             button()
                 .on_click({

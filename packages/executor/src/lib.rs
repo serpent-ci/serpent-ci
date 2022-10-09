@@ -1,6 +1,7 @@
 use indoc::indoc;
 
 pub mod library;
+pub mod run;
 pub mod syntax_tree;
 
 pub const CODE: &str = indoc! {"
