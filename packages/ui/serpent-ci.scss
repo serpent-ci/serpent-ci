@@ -1,5 +1,6 @@
 :root {
     --arrow-size: 12px;
+    --speech-bubble-arrow-offset: 18px;
     --arrow-stroke-width: 2px;
     --arrow-min-length: 40px;
 }
@@ -27,9 +28,8 @@
 @mixin speech-bubble-arrow-top {
     border: var(--arrow-size) solid transparent;
     content: "";
-    margin-left: var(--arrow-size);
     position: absolute;
-    left: var(--arrow-size);
+    left: var(--speech-bubble-arrow-offset);
     width: 0;
     height: 0;
 }
