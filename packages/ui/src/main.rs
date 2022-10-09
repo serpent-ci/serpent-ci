@@ -6,6 +6,7 @@ use std::{
 
 use futures_signals::signal::{Mutable, SignalExt};
 use indoc::indoc;
+use itertools::chain;
 use serpent_ci_executor::{
     library::{FunctionId, Library},
     syntax_tree::{parse, Expression, Function, Statement},
@@ -140,17 +141,18 @@ fn render_function_body<'a>(
     body: impl Iterator<Item = &'a Statement<FunctionId>>,
     library: &Rc<Library>,
 ) -> DivBuilder {
-    let body_border = [bs::BORDER, bs::BORDER_SECONDARY, bs::ROUNDED, bs::SHADOW];
-    let body_box = [bs::MT_3, bs::ME_3, bs::P_3];
+    let border = [bs::BORDER, bs::BORDER_SECONDARY, bs::ROUNDED, bs::SHADOW];
+    let box_model = [bs::MT_3, bs::ME_3, bs::P_3];
 
-    row([
-        bs::ALIGN_SELF_START,
-        bs::ALIGN_ITEMS_START,
-        css::SPEECH_BUBBLE_TOP,
-    ]
-    .into_iter()
-    .chain(body_border)
-    .chain(body_box))
+    row(chain!(
+        [
+            bs::ALIGN_SELF_START,
+            bs::ALIGN_ITEMS_START,
+            css::SPEECH_BUBBLE_TOP,
+        ],
+        border,
+        box_model
+    ))
     .children(body.flat_map(|statement| match statement {
         Statement::Pass => Vec::new(),
         Statement::Expression(expr) => render_expression(expr, library),
